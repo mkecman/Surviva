@@ -9,6 +9,14 @@ var Ai = function( game )
 
 Ai.prototype.playNextMove = function() 
 {
+	/*
+	if( game.Health.getFillPercentage() < 50 )
+		this.isSmart = true;
+
+	if( game.Health.getFillPercentage() > 115 )
+		this.isSmart = false;
+	*/
+
 	this.output = "Needed: ";
 	this.collectNutrientLevels();
 	this.sortNutrientLevels();
@@ -74,17 +82,17 @@ Ai.prototype.collectFoodValues = function()
 
 Ai.prototype.findBestFood = function() 
 {
-	var nutrientName = this.nutrients[ 2 ].name.toLowerCase();
+	var nutrientName;
 	if( this.isSmart )
 	{
-		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
-
-		nutrientName = this.nutrients[ 1 ].name.toLowerCase();
-		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
-
 		nutrientName = this.nutrients[ 0 ].name.toLowerCase();
 		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
 	}
+	/*else
+	{
+		nutrientName = this.nutrients[ 0 ].name.toLowerCase();
+		this.foods.sort( this.sortFoodByLeastNeededNutrient( nutrientName ) );
+	}*/
 	
 	this.output += nutrientName + ", " + this.nutrients[ 1 ].name.toLowerCase() + ", " + this.nutrients[ 2 ].name.toLowerCase() + " | Food: ";
 };
@@ -94,6 +102,14 @@ Ai.prototype.sortFoodByNeededNutrient = function( nutrientName )
 	return function( a, b )
 	{
 		return b[ nutrientName ] - a[ nutrientName ];
+	}
+};
+
+Ai.prototype.sortFoodByLeastNeededNutrient = function( nutrientName ) 
+{
+	return function( a, b )
+	{
+		return a[ nutrientName ] - b[ nutrientName ];
 	}
 };
 

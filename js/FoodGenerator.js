@@ -38,7 +38,7 @@ var FoodGenerator = function()
 			nutrient2 	: 1,	//minerals
 			nutrient3 	: 10,	//carbs
 			nutrient4 	: 25,	//protein
-			nutrient5 	: 10	//fat
+			nutrient5 	: 0	//fat
 		},
 		{
 			type		: "drinks",

@@ -6,7 +6,7 @@ function trigerAi()
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
-	this.MAX_BUY_FOOD = 3;
+	this.MAX_BUY_FOOD = 1;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -52,10 +52,13 @@ Game.prototype.StartGame = function()
 	this.cartHTML = document.getElementById( "cart" );
 
 	var ctx = document.getElementById("nutrients-bar-levels-canvas").getContext("2d");
-	this.barChart = new Chart(ctx).Radar(this.radarChartData, this.optionsRadar);
+	this.radarChart = new Chart(ctx).Radar(this.radarChartData, this.optionsRadar);
 
 	var ctx2 = document.getElementById("nutrients-line-levels-canvas").getContext("2d");
 	this.lineChart = new Chart(ctx2).Line(this.lineChartData, this.optionsLine);
+
+	var ctx3 = document.getElementById("health-level-canvas").getContext("2d");
+	this.barChart = new Chart(ctx3).Bar(this.barChartData, this.optionsBar);
 
 	this.drawFood();
 
@@ -72,8 +75,8 @@ Game.prototype.drawFood = function()
 		var nutrient = this.foodGenerator.generate( i );
 		this.foodDrawer.nutrients.push( nutrient );
 	};
-	this.foodDrawer.drawHTML();
-	this.foodDrawer.makeFoodGraphs();
+	//this.foodDrawer.drawHTML();
+	//this.foodDrawer.makeFoodGraphs();
 };
 
 Game.prototype.stopAi = function() 
@@ -167,15 +170,17 @@ Game.prototype.Update = function()
 			this.timeoutID = setTimeout( trigerAi, 25 );
 	}
 
-	//this.barChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();
-	//this.barChart.datasets[ 0 ].points[ 1 ].value = this.Pain.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 0 ].value = this.Water.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 5 ].value = this.Vitamins.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 1 ].value = this.Minerals.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 3 ].value = this.Carbs.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 4 ].value = this.Protein.getFillPercentage();
-	this.barChart.datasets[ 5 ].points[ 2 ].value = this.Fat.getFillPercentage();
+	//this.radarChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();
+	//this.radarChart.datasets[ 0 ].points[ 1 ].value = this.Pain.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 0 ].value = this.Water.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 5 ].value = this.Vitamins.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 1 ].value = this.Minerals.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 3 ].value = this.Carbs.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 4 ].value = this.Protein.getFillPercentage();
+	this.radarChart.datasets[ 5 ].points[ 2 ].value = this.Fat.getFillPercentage();
+	this.radarChart.update();
 
+	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
 	this.barChart.update();
 
 	this.drawFood();
@@ -199,7 +204,7 @@ Game.prototype.BuyNutrient = function( nutrientId )
 	{
 		if( this.currentMoney >= this.foodDrawer.nutrients[ nutrientId ].price )
 		{
-			window[ "foodChart" + nutrientId ].switchState( true );
+			//window[ "foodChart" + nutrientId ].switchState( true );
 			this.dailyNutrients.push( nutrientId );
 			this.currentMoney -= this.foodDrawer.nutrients[ nutrientId ].price;
 			this.UpdateCart();
@@ -311,11 +316,11 @@ Game.prototype.optionsBar =
         })
 		*/
     },
-    showTooltips: true,
+    showTooltips: false,
     animation:false,
     scaleFontColor : "black",
-    scaleOverride : false,
-    scaleSteps : 7,
+    scaleOverride : true,
+    scaleSteps : 6,
     scaleStepWidth : 20,
     scaleStartValue : 0 
 };
@@ -389,14 +394,14 @@ Game.prototype.radarChartData =
 
 Game.prototype.barChartData = 
 {
-	labels : [ "Water","Vitamins","Minerals","Carbs","Protein","Fat"],
+	labels : [ "Health" ],
 	datasets : [
 		{
 			fillColor : [ "#13ef80", "#ef139f", "#2094ee", "#64ee20", "#c7c7c7", "#ee2024", "#a856ed", "#ee9e20" ],
 			strokeColor : "rgba(220,220,220,0.8)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
-			data : [100,100,100,100,100,100]
+			data : [100]
 		}
 	]
 };
@@ -495,6 +500,7 @@ Game.prototype.addDataToLineChart = function()
 {
 	var data = [];
 	data.push( this.Health.getFillPercentage() );
+	/*
 	data.push( this.Pain.getFillPercentage() );
 	data.push( this.Water.getFillPercentage() );
 	data.push( this.Vitamins.getFillPercentage() );
@@ -502,6 +508,7 @@ Game.prototype.addDataToLineChart = function()
 	data.push( this.Carbs.getFillPercentage() );
 	data.push( this.Protein.getFillPercentage() );
 	data.push( this.Fat.getFillPercentage() );
+	*/
 
 	this.lineChart.addData( data, this.turn );
 };

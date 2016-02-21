@@ -1,5 +1,11 @@
 /*! HTML5 Boilerplate v5.0 | MIT License | http://h5bp.com/ */
 
+
+.healthBar
+{
+    float: right;
+}
+
 .nutrient-cell
 {
     min-width: 120px;
