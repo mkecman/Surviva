@@ -4,6 +4,7 @@ var Ai = function( game )
 	this.nutrients = [];
 	this.foods = [];
 	this.output = "";
+	this.isSmart = false;
 }
 
 Ai.prototype.playNextMove = function() 
@@ -74,13 +75,16 @@ Ai.prototype.collectFoodValues = function()
 Ai.prototype.findBestFood = function() 
 {
 	var nutrientName = this.nutrients[ 2 ].name.toLowerCase();
-	this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
+	if( this.isSmart )
+	{
+		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
 
-	nutrientName = this.nutrients[ 1 ].name.toLowerCase();
-	this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
+		nutrientName = this.nutrients[ 1 ].name.toLowerCase();
+		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
 
-	nutrientName = this.nutrients[ 0 ].name.toLowerCase();
-	this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
+		nutrientName = this.nutrients[ 0 ].name.toLowerCase();
+		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
+	}
 	
 	this.output += nutrientName + ", " + this.nutrients[ 1 ].name.toLowerCase() + ", " + this.nutrients[ 2 ].name.toLowerCase() + " | Food: ";
 };
@@ -95,10 +99,12 @@ Ai.prototype.sortFoodByNeededNutrient = function( nutrientName )
 
 Ai.prototype.playThreeBestFood = function() 
 {
-	this.game.BuyNutrient( this.foods[ 0 ].id );
-	this.game.BuyNutrient( this.foods[ 1 ].id );
-	this.game.BuyNutrient( this.foods[ 2 ].id );
+	for (var i = 0; i < game.MAX_BUY_FOOD; i++) 
+	{
+		this.game.BuyNutrient( this.foods[ i ].id );
+	};
+	
 	this.output += this.foods[ 0 ].foodName + ", " + this.foods[ 1 ].foodName + ", " + this.foods[ 2 ].foodName;
-	console.log( this.output );
+	//console.log( this.output );
 };
 

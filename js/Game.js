@@ -6,15 +6,18 @@ function trigerAi()
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
+	this.MAX_BUY_FOOD = 3;
+	this.timeoutID = 0;
 	
 	this.turn = 1;
+	this.aiEnabled = false;
 
-	this.dailyMoney = 3;
+	this.dailyMoney = this.MAX_BUY_FOOD;
 	this.dailyNutrients = [];
 	this.currentMoney = 0;
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
-	this.Health 	= new NutrientLevelValues( "Health",	 5,		 1000,	 1,		 85,	 115,	 120,	 130 ); //5d
+	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 1,		 85,	 115,	 120,	 130 ); //5d
 	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
 	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
 	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
@@ -37,6 +40,9 @@ var Game = function()
 
 Game.prototype.StartGame = function()
 {
+	this.megaTurn = Date.now();
+	$.php("php/SaveFile.php", { turn:"turn", megaTurn: this.megaTurn, nutrients : ["water","vitamins","minerals","carbs","protein","fat"] } );
+
 	this.turnCountHTML = document.getElementById( "turn-count" );
 	this.turnCountHTMLDefaultText = this.turnCountHTML.innerHTML;
 	this.moneyCountHTML = document.getElementById( "money-count" );
@@ -52,6 +58,9 @@ Game.prototype.StartGame = function()
 	this.lineChart = new Chart(ctx2).Line(this.lineChartData, this.optionsLine);
 
 	this.drawFood();
+
+	if( this.aiEnabled )
+		this.timeoutID = setTimeout( trigerAi, 500 );
 }
 
 Game.prototype.drawFood = function() 
@@ -65,6 +74,11 @@ Game.prototype.drawFood = function()
 	};
 	this.foodDrawer.drawHTML();
 	this.foodDrawer.makeFoodGraphs();
+};
+
+Game.prototype.stopAi = function() 
+{
+	clearTimeout(this.timeoutID);
 };
 
 Game.prototype.Update = function() 
@@ -114,6 +128,7 @@ Game.prototype.Update = function()
 	if( this.Health.currentValue <= 0 )
 	{
 		var results = { turn : this.turn };
+		results.megaTurn = this.megaTurn;
 		results.nutrients = 
 		[
 			this.Water.getFillPercentage(),
@@ -143,11 +158,13 @@ Game.prototype.Update = function()
 		this.Protein.currentValue = this.Protein.starting;
 		this.Fat.currentValue = this.Fat.starting;
 
-		setTimeout( trigerAi, 1000 );
+		if( this.aiEnabled )
+			this.timeoutID = setTimeout( trigerAi, 500 );
 	}
 	else
 	{
-		setTimeout( trigerAi, 50 );
+		if( this.aiEnabled )
+			this.timeoutID = setTimeout( trigerAi, 25 );
 	}
 
 	//this.barChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();
@@ -199,7 +216,7 @@ Game.prototype.BuyNutrient = function( nutrientId )
 		this.dailyNutrients.splice( this.dailyNutrients.indexOf( nutrientId ), 1 );
 		this.UpdateCart();
 	}
-	if( this.dailyNutrients.length == 3 )
+	if( this.dailyNutrients.length == this.MAX_BUY_FOOD )
 		this.DrawLineChart(1);
 };
 
@@ -468,7 +485,8 @@ Game.prototype.DrawLineChart = function( steps )
 	for (var i = 0; i < steps; i++) 
 	{
 		this.Update();
-		this.addDataToLineChart();
+		if( !this.aiEnabled )
+			this.addDataToLineChart();
 	};
 	this.lineChart.update();
 };

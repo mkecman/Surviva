@@ -3,9 +3,9 @@ var game;
 window.onload = function()
 {
     game = new Game();
+	game.aiEnabled = true;
 	game.StartGame();
 	game.DrawLineChart( 0 );
-	setTimeout( trigerAi, 2000 );
 };
 
 
