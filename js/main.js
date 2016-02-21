@@ -5,6 +5,7 @@ window.onload = function()
     game = new Game();
 	game.StartGame();
 	game.DrawLineChart( 0 );
+	setTimeout( trigerAi, 2000 );
 };
 
 

@@ -72,3 +72,31 @@ NutrientLevelValues.prototype.addDelta = function( delta )
 {
 	this.currentValue += delta;
 };
+
+NutrientLevelValues.prototype.getZoneValue = function() 
+{
+	var percentageValue = Math.round( this.currentValue / this.starting * 100 );
+
+	if( percentageValue < 0 ) 
+		return 0;
+
+	if( percentageValue < this.minimum ) 
+		return 1;
+
+	if( percentageValue >= this.minimum && percentageValue < this.minOptimum )
+		return 2;
+
+	if( percentageValue >= this.minOptimum && percentageValue < this.maxOptimum )
+		return 3;
+
+	if( percentageValue >= this.maxOptimum && percentageValue < this.resisted )
+		return 4;
+
+	if( percentageValue >= this.resisted && percentageValue < this.overdose )
+		return 5;
+
+	if( percentageValue >= this.overdose )
+		return 6;
+
+	return 0;
+};

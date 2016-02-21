@@ -107,7 +107,7 @@ DrawFood.prototype.graphOptions =
     tooltipFontColor: "#FFF",
     tooltipFillColor: "rgba(0,0,0,0.7)",
     showTooltips: false,
-    animation:true,
+    animation:false,
     percentageInnerCutout:0,
     animationEasing : "easeOutSine",
     animationSteps:30

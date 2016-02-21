@@ -1,6 +1,6 @@
 var FoodGenerator = function()
 {
-	this.nutrientsMax = 250;
+	this.nutrientsMax = 350;
 
 	this.water;
 	this.protein;
@@ -30,12 +30,12 @@ var FoodGenerator = function()
 		{
 			type		: "junk",
 			names		: ["Carbonara","Hamburger","Pizza","Kebab"],
-			nutrient0 	: 20,	//water
+			nutrient0 	: 50,	//water
 			nutrient1 	: 0,	//vitamins
 			nutrient2 	: 0,	//minerals
-			nutrient3 	: 50,	//carbs
-			nutrient4 	: 15,	//protein
-			nutrient5 	: 35	//fat
+			nutrient3 	: 0,	//carbs
+			nutrient4 	: 50,	//protein
+			nutrient5 	: 0		//fat
 		},
 		{
 			type		: "drinks",

@@ -1,3 +1,8 @@
+function trigerAi()
+{
+	game.ai.playNextMove();
+}
+
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
@@ -26,6 +31,8 @@ var Game = function()
 
 	this.foodGenerator = new FoodGenerator();
 	this.foodDrawer = new DrawFood();
+
+	this.ai = new Ai( this );
 };
 
 Game.prototype.StartGame = function()
@@ -106,7 +113,20 @@ Game.prototype.Update = function()
 	
 	if( this.Health.currentValue <= 0 )
 	{
-		alert( "YOU SURVIVED FOR "+ this.turn + " DAYS!" );
+		var results = { turn : this.turn };
+		results.nutrients = 
+		[
+			this.Water.getFillPercentage(),
+			this.Vitamins.getFillPercentage(),
+			this.Minerals.getFillPercentage(),
+			this.Carbs.getFillPercentage(),
+			this.Protein.getFillPercentage(),
+			this.Fat.getFillPercentage()
+		];
+
+		$.php("php/SaveFile.php", results );
+
+		//alert( "YOU SURVIVED FOR "+ this.turn + " DAYS!" );
 
 		for (var i = 0; i < this.turn; i++) 
 		{
@@ -122,6 +142,12 @@ Game.prototype.Update = function()
 		this.Carbs.currentValue = this.Carbs.starting;
 		this.Protein.currentValue = this.Protein.starting;
 		this.Fat.currentValue = this.Fat.starting;
+
+		setTimeout( trigerAi, 1000 );
+	}
+	else
+	{
+		setTimeout( trigerAi, 50 );
 	}
 
 	//this.barChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();
@@ -234,7 +260,7 @@ Game.prototype.optionsRadar =
 	datasetFill : true,
 	scaleShowLabels : true,
 	showTooltips: false,
-    animation:true,
+    animation:false,
     scaleFontColor : "#000",
     scaleOverride : true,
     scaleSteps : 12,
@@ -269,7 +295,7 @@ Game.prototype.optionsBar =
 		*/
     },
     showTooltips: true,
-    animation:true,
+    animation:false,
     scaleFontColor : "black",
     scaleOverride : false,
     scaleSteps : 7,
@@ -281,7 +307,7 @@ Game.prototype.optionsLine =
 {
     tooltipTemplate: "<%if (label){%><%=value%> <%}%><%= label %>",
     showTooltips: true,
-    animation:true,
+    animation:false,
     scaleFontColor : "black",
     scaleOverride : true,
     scaleSteps : 7,
