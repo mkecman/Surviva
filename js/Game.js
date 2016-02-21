@@ -75,8 +75,11 @@ Game.prototype.drawFood = function()
 		var nutrient = this.foodGenerator.generate( i );
 		this.foodDrawer.nutrients.push( nutrient );
 	};
-	//this.foodDrawer.drawHTML();
-	//this.foodDrawer.makeFoodGraphs();
+	if( !this.aiEnabled )
+	{
+		this.foodDrawer.drawHTML();
+		this.foodDrawer.makeFoodGraphs();
+	}
 };
 
 Game.prototype.stopAi = function() 
@@ -167,7 +170,7 @@ Game.prototype.Update = function()
 	else
 	{
 		if( this.aiEnabled )
-			this.timeoutID = setTimeout( trigerAi, 25 );
+			this.timeoutID = setTimeout( trigerAi, 10 );
 	}
 
 	//this.radarChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();

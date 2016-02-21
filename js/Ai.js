@@ -4,7 +4,7 @@ var Ai = function( game )
 	this.nutrients = [];
 	this.foods = [];
 	this.output = "";
-	this.isSmart = false;
+	this.isSmart = true;
 }
 
 Ai.prototype.playNextMove = function() 

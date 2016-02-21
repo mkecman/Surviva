@@ -1,9 +1,8 @@
 var FoodGenerator = function()
 {
-	this.nutrientsMax = 330; //optimal
-	this.nutrientsMax = 330; 
+	this.nutrientsMax = 1000; //optimal
 
-	this.maxDeviation = 200;
+	this.maxDeviation = 100;
 
 	this.water;
 	this.protein;
@@ -112,6 +111,7 @@ FoodGenerator.prototype.generate = function( index )
 	this.itemTemplate.foodName = profile.names[ this.getRandomInt( 0, profile.names.length - 1 ) ];
 	this.itemTemplate.price = 1;
 	
+	//this.nutrientsMax = this.getRandomInt( 900, 1100 ); 
 	
 	var nutrientsSum = 0;
 	var nutrientsRandoms = [];
@@ -136,7 +136,7 @@ FoodGenerator.prototype.generate = function( index )
 
 FoodGenerator.prototype.gp = function( base, percent )
 {
-	return Math.round( base * ( percent / 100 ) );
+	return Math.round( base * percent );
 }
 
 FoodGenerator.prototype.getRandomInt = function(min, max) 
