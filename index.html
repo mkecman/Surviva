@@ -51,6 +51,15 @@
                 <article id="cell-container">
                     <h3>Click on a nutrient to select it for consumption:</h3>
                 </article>
+                <aside>
+                    <h3>Legend</h3>
+                    <p style="background-color:#2094ee">WATER</p>
+                    <p style="background-color:#64ee20">VITAMINS</p>
+                    <p style="background-color:#c7c7c7">MINERALS</p>
+                    <p style="background-color:#ee2024">CARBONHYDRATES</p>
+                    <p style="background-color:#a856ed">PROTEIN</p>
+                    <p style="background-color:#ee9e20">FAT</p>
+                </aside>
 
                  <article>
                     <input id="steps-input" type="text" width="50" value="20"/><button onclick="game.DrawLineChart( document.getElementById('steps-input').value )">Draw</button>
@@ -61,15 +70,7 @@
                     <div id="cart"></div>
                 </article>
 
-                <article>
-                    <h3>Legend</h3>
-                    <p style="background-color:#2094ee">WATER</p>
-                    <p style="background-color:#64ee20">VITAMINS</p>
-                    <p style="background-color:#c7c7c7">MINERALS</p>
-                    <p style="background-color:#ee2024">CARBONHYDRATES</p>
-                    <p style="background-color:#a856ed">PROTEIN</p>
-                    <p style="background-color:#ee9e20">FAT</p>
-                </article>
+                
 
             </div> <!-- #main -->
         </div> <!-- #main-container -->
@@ -84,6 +85,7 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="js/jqueryphp/jquery.php.js" type="text/javascript"></script>
 
+        <script src="js/Stats.js"></script>
         <script src="js/Ai.js"></script>
         <script src="js/NutrientLevelValues.js"></script>
         <script src="js/FoodGenerator.js"></script>

@@ -1,8 +1,17 @@
 var FoodGenerator = function()
 {
-	this.nutrientsMax = 1000; //optimal
+	this.nutrientsMax = 800; //optimal
+
+	this.nutrientsMaxProfiles = 
+	[
+		1000,
+		1000,
+		1000
+	];
 
 	this.maxDeviation = 100;
+
+	this.foodIndex = 0;
 
 	this.water;
 	this.protein;
@@ -35,17 +44,17 @@ var FoodGenerator = function()
 			nutrient0 	: 25,	//water
 			nutrient1 	: 1,	//vitamins
 			nutrient2 	: 1,	//minerals
-			nutrient3 	: 10,	//carbs
+			nutrient3 	: 15,	//carbs
 			nutrient4 	: 25,	//protein
 			nutrient5 	: 0	//fat
 		},
 		{
 			type		: "drinks",
 			names		: ["Water","Soda Drink","Tea","Fruit Juice","Beer","Wine"],
-			nutrient0 : 80,
+			nutrient0 : 85,
 			nutrient1 : 1,
 			nutrient2 : 3,
-			nutrient3 : 30,
+			nutrient3 : 25,
 			nutrient4 : 0,
 			nutrient5 : 0
 		},
@@ -65,7 +74,7 @@ var FoodGenerator = function()
 			nutrient0 : 20,
 			nutrient1 : 1,
 			nutrient2 : 3,
-			nutrient3 : 20,
+			nutrient3 : 40,
 			nutrient4 : 1,
 			nutrient5 : 1
 		},
@@ -95,7 +104,7 @@ var FoodGenerator = function()
 			nutrient0 : 50,
 			nutrient1 : 4,
 			nutrient2 : 0,
-			nutrient3 : 2,
+			nutrient3 : 0,
 			nutrient4 : 4,
 			nutrient5 : 0
 		}
@@ -103,24 +112,26 @@ var FoodGenerator = function()
 	
 }
 
-FoodGenerator.prototype.generate = function( index ) 
+FoodGenerator.prototype.generate = function() 
 {
-	var profile = this.profiles[ this.getRandomInt( 0, this.profiles.length - 1 ) ];
-
-	this.itemTemplate.id = index;
+	//var profile = this.profiles[ this.getRandomInt( 0, this.profiles.length - 1 ) ];
+	var profile = this.profiles[ this.foodIndex ];
+	this.itemTemplate.id = this.foodIndex++;
 	this.itemTemplate.foodName = profile.names[ this.getRandomInt( 0, profile.names.length - 1 ) ];
 	this.itemTemplate.price = 1;
 	
-	//this.nutrientsMax = this.getRandomInt( 900, 1100 ); 
+	this.nutrientsMax = this.nutrientsMaxProfiles[ this.getRandomInt( 0, this.nutrientsMaxProfiles.length ) ]; 
 	
 	var nutrientsSum = 0;
 	var nutrientsRandoms = [];
 	var base;
+	var gp;
 
 	for (var i = 0; i < 6; i++) 
 	{
 		base = profile["nutrient" + i ];
-		nutrientsRandoms[ i ] = this.getRandomInt( this.getRandomInt( base - this.gp( base, this.maxDeviation ), base ), this.getRandomInt( base, base + this.gp( base, this.maxDeviation ) ) );
+		gp = this.gp( base, this.maxDeviation );
+		nutrientsRandoms[ i ] = this.getRandomInt( this.getRandomInt( base - gp, base ), this.getRandomInt( base, base + gp ) );
 		nutrientsSum += nutrientsRandoms[ i ];
 	};
 

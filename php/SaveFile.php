@@ -5,7 +5,9 @@ require_once "jQuery.php";
 
 $myfile = fopen("../../AiResults-". $_POST["megaTurn"] .".csv", "a") or die("Unable to open file!");
 
-$txt = $_POST["turn"];
+//$txt = $_POST["minTurn"] . "," . $_POST["maxTurn"] . "," . $_POST["avgTurn"] . "," . $_POST["totalRounds"] . "\n";
+
+$txt .= $_POST["turn"];
 foreach ($_POST["nutrients"] as $nutrient ) 
 {
 	$txt .=  "," . $nutrient;

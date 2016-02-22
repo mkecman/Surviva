@@ -7,6 +7,7 @@ var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
 	this.MAX_BUY_FOOD = 1;
+	this.MAX_DRAWN_FOOD = 7;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -36,6 +37,7 @@ var Game = function()
 	this.foodDrawer = new DrawFood();
 
 	this.ai = new Ai( this );
+	this.stats = new Stats();
 };
 
 Game.prototype.StartGame = function()
@@ -53,6 +55,7 @@ Game.prototype.StartGame = function()
 
 	var ctx = document.getElementById("nutrients-bar-levels-canvas").getContext("2d");
 	this.radarChart = new Chart(ctx).Radar(this.radarChartData, this.optionsRadar);
+	this.UpdateRadarChart();
 
 	var ctx2 = document.getElementById("nutrients-line-levels-canvas").getContext("2d");
 	this.lineChart = new Chart(ctx2).Line(this.lineChartData, this.optionsLine);
@@ -70,16 +73,17 @@ Game.prototype.drawFood = function()
 {
 	this.foodDrawer.nutrients = [];
 
-	for (var i = 0; i < 8; i++) 
+	for (var i = 0; i < this.MAX_DRAWN_FOOD; i++) 
 	{
-		var nutrient = this.foodGenerator.generate( i );
+		var nutrient = this.foodGenerator.generate();
 		this.foodDrawer.nutrients.push( nutrient );
 	};
-	if( !this.aiEnabled )
-	{
+	this.foodGenerator.foodIndex = 0;
+	//if( !this.aiEnabled )
+	//{
 		this.foodDrawer.drawHTML();
 		this.foodDrawer.makeFoodGraphs();
-	}
+	//}
 };
 
 Game.prototype.stopAi = function() 
@@ -133,48 +137,72 @@ Game.prototype.Update = function()
 	
 	if( this.Health.currentValue <= 0 )
 	{
-		var results = { turn : this.turn };
-		results.megaTurn = this.megaTurn;
-		results.nutrients = 
-		[
-			this.Water.getFillPercentage(),
-			this.Vitamins.getFillPercentage(),
-			this.Minerals.getFillPercentage(),
-			this.Carbs.getFillPercentage(),
-			this.Protein.getFillPercentage(),
-			this.Fat.getFillPercentage()
-		];
-
-		$.php("php/SaveFile.php", results );
-
-		//alert( "YOU SURVIVED FOR "+ this.turn + " DAYS!" );
-
-		for (var i = 0; i < this.turn; i++) 
-		{
-			this.lineChart.removeData();
-		};
-		
-		this.turn = 1;
-		this.Pain.currentValue = this.Pain.starting;
-		this.Health.currentValue = this.Health.starting;
-		this.Water.currentValue = this.Water.starting;
-		this.Vitamins.currentValue = this.Vitamins.starting;
-		this.Minerals.currentValue = this.Minerals.starting;
-		this.Carbs.currentValue = this.Carbs.starting;
-		this.Protein.currentValue = this.Protein.starting;
-		this.Fat.currentValue = this.Fat.starting;
-
-		if( this.aiEnabled )
-			this.timeoutID = setTimeout( trigerAi, 500 );
+		this.winRound();
 	}
 	else
 	{
 		if( this.aiEnabled )
-			this.timeoutID = setTimeout( trigerAi, 10 );
+			this.timeoutID = setTimeout( trigerAi, 100 );
 	}
 
-	//this.radarChart.datasets[ 0 ].points[ 0 ].value = this.Health.getFillPercentage();
-	//this.radarChart.datasets[ 0 ].points[ 1 ].value = this.Pain.getFillPercentage();
+	this.UpdateRadarChart();
+
+	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
+	this.barChart.update();
+
+	this.drawFood();
+};
+
+Game.prototype.winRound = function() 
+{
+	var results = { turn : this.turn };
+	results.megaTurn = this.megaTurn;
+	results.nutrients = 
+	[
+		this.Water.getFillPercentage(),
+		this.Vitamins.getFillPercentage(),
+		this.Minerals.getFillPercentage(),
+		this.Carbs.getFillPercentage(),
+		this.Protein.getFillPercentage(),
+		this.Fat.getFillPercentage()
+	];
+
+	this.stats.update( results );
+
+	results.minTurn = this.stats.minTurn;
+	results.maxTurn = this.stats.maxTurn;
+	results.avgTurn = this.stats.avgTurn;
+	results.totalRounds = this.stats.rounds.length;
+
+	$.php("php/SaveFile.php", results );
+	$.php("php/SaveStats.php", results );
+
+	if( !this.aiEnabled )
+		alert( "YOU SURVIVED FOR "+ this.turn + " DAYS! Better luck next time!" );
+
+	this.stats.reset();
+
+	for (var i = 0; i < this.turn; i++) 
+	{
+		this.lineChart.removeData();
+	};
+	
+	this.turn = 1;
+	this.Pain.currentValue = this.Pain.starting;
+	this.Health.currentValue = this.Health.starting;
+	this.Water.resetCurrentValue();
+	this.Vitamins.resetCurrentValue();
+	this.Minerals.resetCurrentValue();
+	this.Carbs.resetCurrentValue();
+	this.Protein.resetCurrentValue();
+	this.Fat.resetCurrentValue();
+
+	if( this.aiEnabled )
+		this.timeoutID = setTimeout( trigerAi, 500 );
+};
+
+Game.prototype.UpdateRadarChart = function() 
+{
 	this.radarChart.datasets[ 5 ].points[ 0 ].value = this.Water.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 5 ].value = this.Vitamins.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 1 ].value = this.Minerals.getFillPercentage();
@@ -182,11 +210,6 @@ Game.prototype.Update = function()
 	this.radarChart.datasets[ 5 ].points[ 4 ].value = this.Protein.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 2 ].value = this.Fat.getFillPercentage();
 	this.radarChart.update();
-
-	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
-	this.barChart.update();
-
-	this.drawFood();
 };
 
 Game.prototype.updateNutrientAndHealth = function( nutrient, delta ) 
@@ -370,7 +393,7 @@ Game.prototype.radarChartData =
 		},
 		{
 			label: "minOptimum",
-			fillColor : "rgba(246,230,140,0.2)",
+			fillColor : "rgba(0,0,255,0.2)",
 			strokeColor : "rgba(220,220,220,0.8)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
@@ -378,7 +401,7 @@ Game.prototype.radarChartData =
 		},
 		{
 			label: "minimum",
-			fillColor : "rgba(243,176,165,0.2)",
+			fillColor : "rgba(255,0,0,0.2)",
 			strokeColor : "rgba(220,220,220,0.8)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",

@@ -9,14 +9,20 @@ var NutrientLevelValues = function( name, maxDays, delta, minimum, minOptimum, m
 
 	this.name = name;
 	this.starting = delta * maxDays; //hard number value
-	this.currentValue = this.starting;
+	
 	this.delta = delta; //hard number value of how much the level value drops per time unit
 	this.minimum = minimum; //minimum percentage below which you get negative amount
 	this.minOptimum = minOptimum; //minimum optimal percentage from where you get maximum positive amount
 	this.maxOptimum = maxOptimum; //maximum optimal percentage till where you get maximum positive amount
 	this.resisted = resisted; //maximum percent till which your amount drops to 0
 	this.overdose = overdose; //overdose percentage when you get negative amount
+	this.resetCurrentValue();
 }
+
+NutrientLevelValues.prototype.resetCurrentValue = function() 
+{
+	this.currentValue = this.starting * this.minOptimum / 100;
+};
 
 NutrientLevelValues.prototype.getEfficientyValue = function() 
 {
