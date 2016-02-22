@@ -5,42 +5,53 @@ var DrawFood = function()
     this.graphs = [];
 }
 
-DrawFood.prototype.drawHTML = function()
+DrawFood.prototype.drawHTML = function( maxFood )
 {
     var nutrient;
     var output = "";
-    for (var i = 0; i < this.nutrients.length; i++) 
+    for (var i = 0; i < maxFood; i++) 
     {
-        nutrient = this.nutrients[i];
-        output += this.getCellHTML( nutrient );
+        output += this.getCellHTML( i );
     };
     this.cellContainer.innerHTML = output;
+
+    for (var j = 0; j < maxFood; j++) 
+    {
+        this.graphDataTemplate[ 0 ].value = 10;
+        this.graphDataTemplate[ 1 ].value = 10;
+        this.graphDataTemplate[ 2 ].value = 10;
+        this.graphDataTemplate[ 3 ].value = 10;
+        this.graphDataTemplate[ 4 ].value = 10;
+        this.graphDataTemplate[ 5 ].value = 10;
+
+        var ctx = document.getElementById( "nutrichart"+j ).getContext("2d");
+        window[ "foodChart"+j ] = new Chart( ctx ).Doughnut( this.graphDataTemplate, this.graphOptions );
+    };
 };
 
 DrawFood.prototype.makeFoodGraphs = function()
 {
-	var nutrient;
+    var nutrient;
+    var chart;
     for (var i = 0; i < this.nutrients.length; i++) 
     {
         nutrient = this.nutrients[ i ];
-        this.graphDataTemplate[ 0 ].value = nutrient.carbs;
-        this.graphDataTemplate[ 1 ].value = nutrient.water;
-        this.graphDataTemplate[ 2 ].value = nutrient.protein;
-        this.graphDataTemplate[ 3 ].value = nutrient.fat;
-        this.graphDataTemplate[ 4 ].value = nutrient.vitamins;
-        this.graphDataTemplate[ 5 ].value = nutrient.minerals;
-
-        this.graphOptions.labelName = nutrient.foodName;
-
-        var ctx = document.getElementById( "nutrichart"+nutrient.id ).getContext("2d");
-        window[ "foodChart"+nutrient.id ] = new Chart( ctx ).Doughnut( this.graphDataTemplate, this.graphOptions );
+        chart = window[ "foodChart"+nutrient.id ];
+        chart.segments[ 0 ].value = nutrient.carbs;
+        chart.segments[ 1 ].value = nutrient.water;
+        chart.segments[ 2 ].value = nutrient.protein;
+        chart.segments[ 3 ].value = nutrient.fat;
+        chart.segments[ 4 ].value = nutrient.vitamins;
+        chart.segments[ 5 ].value = nutrient.minerals;
+        chart.options.labelName = nutrient.foodName;
+        chart.update();
     };
 };
 
-DrawFood.prototype.getCellHTML = function( nutrient ) 
+DrawFood.prototype.getCellHTML = function( nutrientId ) 
 {
-	var output = '<div onclick="game.BuyNutrient('+ nutrient.id +')" class="nutrient-cell">'+
-    '<canvas id="nutrichart' + nutrient.id + '" width="120" height="120"></canvas>'+
+	var output = '<div onclick="game.BuyNutrient('+ nutrientId +')" class="nutrient-cell">'+
+    '<canvas id="nutrichart' + nutrientId + '" width="120" height="120"></canvas>'+
 '</div>';
 	return output;
 };

@@ -118,9 +118,9 @@ Ai.prototype.playThreeBestFood = function()
 	for (var i = 0; i < game.MAX_BUY_FOOD; i++) 
 	{
 		this.game.BuyNutrient( this.foods[ i ].id );
+		this.output += this.foods[ i ].foodName + ", ";
 	};
 	
-	this.output += this.foods[ 0 ].foodName + ", " + this.foods[ 1 ].foodName + ", " + this.foods[ 2 ].foodName;
 	//console.log( this.output );
 };
 

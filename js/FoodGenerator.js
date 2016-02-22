@@ -4,12 +4,14 @@ var FoodGenerator = function()
 
 	this.nutrientsMaxProfiles = 
 	[
+		700,
+		800,
+		900,
 		1000,
-		1000,
-		1000
+		1200
 	];
 
-	this.maxDeviation = 100;
+	this.maxDeviation = .5;
 
 	this.foodIndex = 0;
 
@@ -112,15 +114,16 @@ var FoodGenerator = function()
 	
 }
 
-FoodGenerator.prototype.generate = function() 
+FoodGenerator.prototype.generate = function( index ) 
 {
-	//var profile = this.profiles[ this.getRandomInt( 0, this.profiles.length - 1 ) ];
-	var profile = this.profiles[ this.foodIndex ];
+	var profile = this.profiles[ this.getRandomInt( 0, this.profiles.length - 1 ) ];
+	//var profile = this.profiles[ this.foodIndex ];
+
 	this.itemTemplate.id = this.foodIndex++;
 	this.itemTemplate.foodName = profile.names[ this.getRandomInt( 0, profile.names.length - 1 ) ];
 	this.itemTemplate.price = 1;
 	
-	this.nutrientsMax = this.nutrientsMaxProfiles[ this.getRandomInt( 0, this.nutrientsMaxProfiles.length ) ]; 
+	this.nutrientsMax = this.nutrientsMaxProfiles[ this.getRandomInt( 0, this.nutrientsMaxProfiles.length - 1 ) ]; 
 	
 	var nutrientsSum = 0;
 	var nutrientsRandoms = [];
@@ -141,6 +144,7 @@ FoodGenerator.prototype.generate = function()
 	this.itemTemplate.carbs = Math.round( nutrientsRandoms[ 3 ] / nutrientsSum * this.nutrientsMax );
 	this.itemTemplate.protein = Math.round( nutrientsRandoms[ 4 ] / nutrientsSum * this.nutrientsMax );
 	this.itemTemplate.fat = Math.round( nutrientsRandoms[ 5 ] / nutrientsSum * this.nutrientsMax );
+	
 	
 	return JSON.parse( JSON.stringify( this.itemTemplate ) );
 };

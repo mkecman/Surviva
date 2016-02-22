@@ -7,7 +7,7 @@ var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
 	this.MAX_BUY_FOOD = 1;
-	this.MAX_DRAWN_FOOD = 7;
+	this.MAX_DRAWN_FOOD = 2;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -43,7 +43,15 @@ var Game = function()
 Game.prototype.StartGame = function()
 {
 	this.megaTurn = Date.now();
-	$.php("php/SaveFile.php", { turn:"turn", megaTurn: this.megaTurn, nutrients : ["water","vitamins","minerals","carbs","protein","fat"] } );
+	$.php("php/SaveFile.php", 
+		{ turn:"turn", 
+		megaTurn: this.megaTurn, 
+		nutrients : ["water","vitamins","minerals","carbs","protein","fat"],
+		minTurn : 1000,
+		maxTurn : 0,
+		avgTurn : 0,
+		totalRounds : 0
+	} );
 
 	this.turnCountHTML = document.getElementById( "turn-count" );
 	this.turnCountHTMLDefaultText = this.turnCountHTML.innerHTML;
@@ -63,6 +71,7 @@ Game.prototype.StartGame = function()
 	var ctx3 = document.getElementById("health-level-canvas").getContext("2d");
 	this.barChart = new Chart(ctx3).Bar(this.barChartData, this.optionsBar);
 
+	this.foodDrawer.drawHTML( this.MAX_DRAWN_FOOD );
 	this.drawFood();
 
 	if( this.aiEnabled )
@@ -73,17 +82,17 @@ Game.prototype.drawFood = function()
 {
 	this.foodDrawer.nutrients = [];
 
+	this.foodGenerator.foodIndex = 0;
 	for (var i = 0; i < this.MAX_DRAWN_FOOD; i++) 
 	{
 		var nutrient = this.foodGenerator.generate();
 		this.foodDrawer.nutrients.push( nutrient );
 	};
-	this.foodGenerator.foodIndex = 0;
-	//if( !this.aiEnabled )
-	//{
-		this.foodDrawer.drawHTML();
+	
+	if( !this.aiEnabled )
+	{
 		this.foodDrawer.makeFoodGraphs();
-	//}
+	}
 };
 
 Game.prototype.stopAi = function() 
@@ -135,6 +144,13 @@ Game.prototype.Update = function()
 	this.dailyNutrients = [];
 	this.UpdateCart();
 	
+	this.UpdateRadarChart();
+
+	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
+	this.barChart.update();
+
+	this.drawFood();
+
 	if( this.Health.currentValue <= 0 )
 	{
 		this.winRound();
@@ -142,15 +158,8 @@ Game.prototype.Update = function()
 	else
 	{
 		if( this.aiEnabled )
-			this.timeoutID = setTimeout( trigerAi, 100 );
+			this.timeoutID = setTimeout( trigerAi, 10 );
 	}
-
-	this.UpdateRadarChart();
-
-	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
-	this.barChart.update();
-
-	this.drawFood();
 };
 
 Game.prototype.winRound = function() 
@@ -175,12 +184,9 @@ Game.prototype.winRound = function()
 	results.totalRounds = this.stats.rounds.length;
 
 	$.php("php/SaveFile.php", results );
-	$.php("php/SaveStats.php", results );
 
 	if( !this.aiEnabled )
 		alert( "YOU SURVIVED FOR "+ this.turn + " DAYS! Better luck next time!" );
-
-	this.stats.reset();
 
 	for (var i = 0; i < this.turn; i++) 
 	{
@@ -516,7 +522,7 @@ Game.prototype.DrawLineChart = function( steps )
 	for (var i = 0; i < steps; i++) 
 	{
 		this.Update();
-		if( !this.aiEnabled )
+		//if( !this.aiEnabled )
 			this.addDataToLineChart();
 	};
 	this.lineChart.update();

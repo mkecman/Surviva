@@ -5,16 +5,15 @@ var Stats = function()
 
 Stats.prototype.reset = function() 
 {
-	this.minTurn = 0;
+	this.minTurn = 1000;
 	this.maxTurn = 0;
 	this.avgTurn = 0;
-
 	this.rounds = [];
 };
 
 Stats.prototype.update = function( results ) 
 {
-	if( results.turn < this.minTurn )
+	if( results.turn < this.minTurn && results.turn > 0 )
 		this.minTurn = results.turn;
 	if( results.turn > this.maxTurn )
 		this.maxTurn = results.turn;
@@ -32,5 +31,5 @@ Stats.prototype.calculateAvgTurn = function()
 		totalTurn += this.rounds[ i ].turn;
 	};
 
-	this.avgTurn = totalTurn / this.rounds.length;
+	this.avgTurn = Math.round( totalTurn / this.rounds.length );
 };
