@@ -42,7 +42,7 @@ var Game = function()
 
 Game.prototype.StartGame = function()
 {
-	this.megaTurn = Date.now();
+	this.megaTurn = this.getMegaTurn();
 	$.php("php/SaveFile.php", 
 		{ turn:"turn", 
 		megaTurn: this.megaTurn, 
@@ -131,20 +131,25 @@ Game.prototype.Update = function()
 		total			 += nutrient.protein;
 		total			 += nutrient.fat;
 	};
-	
-	this.Health.update( total );
+
+
+	//console.log( this.Health.currentValue );
+	//this.Health.update( total );
+	console.log( "update:" + this.turn + " | " + this.Health.currentValue );
+
 	this.updateNutrientAndHealth( this.Water, totalWater );
 	this.updateNutrientAndHealth( this.Vitamins, totalVitamins );
 	this.updateNutrientAndHealth( this.Minerals, totalMinerals );
 	this.updateNutrientAndHealth( this.Carbs, totalCarbs );
 	this.updateNutrientAndHealth( this.Protein, totalProtein );
 	this.updateNutrientAndHealth( this.Fat, totalFat );
+	console.log( "______" );
 
 	this.currentMoney = this.dailyMoney;
 	this.dailyNutrients = [];
 	this.UpdateCart();
 	
-	this.UpdateRadarChart();
+	//this.UpdateRadarChart();
 
 	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
 	this.barChart.update();
@@ -153,6 +158,8 @@ Game.prototype.Update = function()
 
 	if( this.Health.currentValue <= 0 )
 	{
+		console.log( "died:" + this.Health.currentValue );
+		console.log( "----------------------" );
 		this.winRound();
 	}
 	else
@@ -185,6 +192,8 @@ Game.prototype.winRound = function()
 
 	$.php("php/SaveFile.php", results );
 
+	$.php("php/SavePNG.php", { image: this.lineChart.toBase64Image(), megaTurn: this.megaTurn, rounds: results.totalRounds } );
+
 	if( !this.aiEnabled )
 		alert( "YOU SURVIVED FOR "+ this.turn + " DAYS! Better luck next time!" );
 
@@ -204,7 +213,7 @@ Game.prototype.winRound = function()
 	this.Fat.resetCurrentValue();
 
 	if( this.aiEnabled )
-		this.timeoutID = setTimeout( trigerAi, 500 );
+		this.timeoutID = setTimeout( trigerAi, 1000 );
 };
 
 Game.prototype.UpdateRadarChart = function() 
@@ -222,12 +231,12 @@ Game.prototype.updateNutrientAndHealth = function( nutrient, delta )
 {
 	var efficiency = nutrient.update( delta );
 	var positive = efficiency * ( ( this.Health.starting * this.MAX_HEALTH_PR ) - this.Health.currentValue ) / 3 * nutrient.delta / this.Health.delta;
-	//console.log( nutrient.name + " : " + efficiency * delta );
+	console.log( "    " + nutrient.name + " : " + efficiency * nutrient.delta );
 
 	if( efficiency >= 0 )
 		this.Health.addDelta( positive ); //max increase is 20%
 	else
-		this.Health.addDelta( efficiency * delta * 2 ); //max decrease is 200%
+		this.Health.addDelta( efficiency * nutrient.delta ); //max decrease is 200%
 };
 
 Game.prototype.BuyNutrient = function( nutrientId ) 
@@ -451,7 +460,7 @@ Game.prototype.lineChartData =
             pointHighlightStroke: "rgba(220,220,220,1)",
             data: [ 100 ]
         },
-        {
+        /*{
             fillColor: "rgba(220,220,220,0)",
             strokeColor: "#ef139f",
             pointColor: "#ef139f",
@@ -459,7 +468,7 @@ Game.prototype.lineChartData =
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
             data: [ 100 ]
-        },
+        },*/
         {
             fillColor: "rgba(220,220,220,0)",
             strokeColor: "#2094ee",
@@ -534,14 +543,21 @@ Game.prototype.addDataToLineChart = function()
 	data.push( this.Health.getFillPercentage() );
 	/*
 	data.push( this.Pain.getFillPercentage() );
+	*/
 	data.push( this.Water.getFillPercentage() );
 	data.push( this.Vitamins.getFillPercentage() );
 	data.push( this.Minerals.getFillPercentage() );
 	data.push( this.Carbs.getFillPercentage() );
 	data.push( this.Protein.getFillPercentage() );
 	data.push( this.Fat.getFillPercentage() );
-	*/
+	
 
 	this.lineChart.addData( data, this.turn );
+};
+
+Game.prototype.getMegaTurn = function() 
+{
+	var date = new Date();
+	return date.getFullYear() + "" + date.getMonth() + 1 + "" + date.getDate() + "-" + date.getHours() + date.getMinutes() + date.getSeconds();
 };
 

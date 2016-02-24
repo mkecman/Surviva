@@ -76,6 +76,7 @@ NutrientLevelValues.prototype.update = function( inputGrams )
 
 NutrientLevelValues.prototype.addDelta = function( delta ) 
 {
+	//console.log( "        " + delta );
 	this.currentValue += delta;
 };
 
