@@ -149,7 +149,7 @@ Game.prototype.Update = function()
 	this.dailyNutrients = [];
 	this.UpdateCart();
 	
-	//this.UpdateRadarChart();
+	this.UpdateRadarChart();
 
 	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
 	this.barChart.update();
@@ -218,13 +218,36 @@ Game.prototype.winRound = function()
 
 Game.prototype.UpdateRadarChart = function() 
 {
+	/*
+	this.radarChart.segments[ 0 ].value = this.Water.getFillPercentage();
+	this.radarChart.segments[ 1 ].value = this.Vitamins.getFillPercentage();
+	this.radarChart.segments[ 2 ].value = this.Minerals.getFillPercentage();
+	this.radarChart.segments[ 5 ].value = this.Carbs.getFillPercentage();
+	this.radarChart.segments[ 4 ].value = this.Protein.getFillPercentage();
+	this.radarChart.segments[ 3 ].value = this.Fat.getFillPercentage();
+	this.radarChart.update();
+	*/
+	
 	this.radarChart.datasets[ 5 ].points[ 0 ].value = this.Water.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 5 ].value = this.Vitamins.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 1 ].value = this.Minerals.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 3 ].value = this.Carbs.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 4 ].value = this.Protein.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 2 ].value = this.Fat.getFillPercentage();
+	
+	var maxScaleStep = this.optionsRadar.scaleSteps;
+	for (var i = 0; i < this.radarChart.datasets[5].points.length; i++) 
+	{
+		var point = this.radarChart.datasets[5].points[i];
+		var nutrientScaleStep = point.value / this.optionsRadar.scaleStepWidth;
+		if( nutrientScaleStep > maxScaleStep )
+			maxScaleStep = nutrientScaleStep;
+	};
+	if( maxScaleStep > 12 )
+		maxScaleStep = 12;
+	this.radarChart.options.scaleSteps = maxScaleStep;
 	this.radarChart.update();
+
 };
 
 Game.prototype.updateNutrientAndHealth = function( nutrient, delta ) 
@@ -326,9 +349,11 @@ Game.prototype.optionsRadar =
     animation:false,
     scaleFontColor : "#000",
     scaleOverride : true,
-    scaleSteps : 12,
+    scaleSteps : 6,
     scaleStepWidth : 20,
-    scaleStartValue : -20 
+    scaleStartValue : -20,
+	pointDotRadius : 4,
+	pointDotStrokeWidth : 2,
 };
 
 Game.prototype.optionsBar = 
@@ -377,6 +402,46 @@ Game.prototype.optionsLine =
     scaleStepWidth : 20,
     scaleStartValue : 0 
 };
+
+Game.prototype.polarChartData = 
+[
+	{
+		value: 50,
+        color: "#2094ee",
+        highlight: "#2094ee",
+        label: "Water"
+	},
+	{
+		value: 50,
+        color: "#64ee20",
+        highlight: "#64ee20",
+        label: "Vitamins"
+	},
+	{
+		value: 50,
+        color: "#c7c7c7",
+        highlight: "#c7c7c7",
+        label: "Minerals"
+	},
+	{
+		value: 50,
+        color: "#ee9e20",
+        highlight: "#ee9e20",
+        label: "Fat"
+	},
+	{
+		value: 50,
+        color: "#a856ed",
+        highlight: "#a856ed",
+        label: "Protein"
+	},
+	{
+		value: 50,
+        color: "#ee2024",
+        highlight: "#ee2024",
+        label: "Carbs"
+	}
+];
 
 Game.prototype.radarChartData = 
 {
