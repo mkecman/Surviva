@@ -3,11 +3,17 @@ function trigerAi()
 	game.ai.playNextMove();
 }
 
+function resetAi()
+{
+	game.reset();
+	game.ai.playNextMove();
+}
+
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
 	this.MAX_BUY_FOOD = 1;
-	this.MAX_DRAWN_FOOD = 2;
+	this.MAX_DRAWN_FOOD = 3;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -135,7 +141,7 @@ Game.prototype.Update = function()
 
 	//console.log( this.Health.currentValue );
 	//this.Health.update( total );
-	console.log( "update:" + this.turn + " | " + this.Health.currentValue );
+	//console.log( "update:" + this.turn + " | " + this.Health.currentValue );
 
 	this.updateNutrientAndHealth( this.Water, totalWater );
 	this.updateNutrientAndHealth( this.Vitamins, totalVitamins );
@@ -143,7 +149,7 @@ Game.prototype.Update = function()
 	this.updateNutrientAndHealth( this.Carbs, totalCarbs );
 	this.updateNutrientAndHealth( this.Protein, totalProtein );
 	this.updateNutrientAndHealth( this.Fat, totalFat );
-	console.log( "______" );
+	//console.log( "______" );
 
 	this.currentMoney = this.dailyMoney;
 	this.dailyNutrients = [];
@@ -158,8 +164,8 @@ Game.prototype.Update = function()
 
 	if( this.Health.currentValue <= 0 )
 	{
-		console.log( "died:" + this.Health.currentValue );
-		console.log( "----------------------" );
+		//console.log( "died:" + this.Health.currentValue );
+		//console.log( "----------------------" );
 		this.winRound();
 	}
 	else
@@ -167,6 +173,15 @@ Game.prototype.Update = function()
 		if( this.aiEnabled )
 			this.timeoutID = setTimeout( trigerAi, 10 );
 	}
+};
+
+Game.prototype.UpdateGraphics = function() 
+{
+	this.turnCountHTML.innerHTML = this.turnCountHTMLDefaultText + this.turn;
+	this.UpdateRadarChart();
+	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
+	this.barChart.update();
+	this.drawFood();
 };
 
 Game.prototype.winRound = function() 
@@ -195,13 +210,21 @@ Game.prototype.winRound = function()
 	$.php("php/SavePNG.php", { image: this.lineChart.toBase64Image(), megaTurn: this.megaTurn, rounds: results.totalRounds } );
 
 	if( !this.aiEnabled )
-		alert( "YOU SURVIVED FOR "+ this.turn + " DAYS! Better luck next time!" );
-
-	for (var i = 0; i < this.turn; i++) 
 	{
-		this.lineChart.removeData();
-	};
-	
+		var anotherGame = confirm( "YOU SURVIVED FOR "+ this.turn + " DAYS!\nBetter luck next time!\n\nPlay another round?" );
+		if ( anotherGame == false ) 
+			alert( "Well, we'll give you an option to play anyway :)" );
+
+		this.reset();
+		this.UpdateGraphics();
+	}
+	else
+		this.timeoutID = setTimeout( resetAi, 3000 );
+};
+
+Game.prototype.reset = function() 
+{
+	this.lineChart.removeData();
 	this.turn = 1;
 	this.Pain.currentValue = this.Pain.starting;
 	this.Health.currentValue = this.Health.starting;
@@ -211,9 +234,7 @@ Game.prototype.winRound = function()
 	this.Carbs.resetCurrentValue();
 	this.Protein.resetCurrentValue();
 	this.Fat.resetCurrentValue();
-
-	if( this.aiEnabled )
-		this.timeoutID = setTimeout( trigerAi, 1000 );
+	// body...
 };
 
 Game.prototype.UpdateRadarChart = function() 
@@ -254,7 +275,7 @@ Game.prototype.updateNutrientAndHealth = function( nutrient, delta )
 {
 	var efficiency = nutrient.update( delta );
 	var positive = efficiency * ( ( this.Health.starting * this.MAX_HEALTH_PR ) - this.Health.currentValue ) / 3 * nutrient.delta / this.Health.delta;
-	console.log( "    " + nutrient.name + " : " + efficiency * nutrient.delta );
+	//console.log( "    " + nutrient.name + " : " + efficiency * nutrient.delta );
 
 	if( efficiency >= 0 )
 		this.Health.addDelta( positive ); //max increase is 20%

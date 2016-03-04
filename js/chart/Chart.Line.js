@@ -244,10 +244,11 @@
 			this.update();
 		},
 		removeData : function(){
-			this.scale.removeXLabel();
+			this.scale.removeAllXLabels();
 			//Then re-render the chart.
 			helpers.each(this.datasets,function(dataset){
-				dataset.points.shift();
+				//dataset.points.shift();
+				dataset.points = [];
 			},this);
 			this.update();
 		},
