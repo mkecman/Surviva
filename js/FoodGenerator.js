@@ -11,7 +11,7 @@ var FoodGenerator = function()
 		900,
 		950,
 		1000,
-		1200
+		1100
 	];
 
 	this.maxDeviation = .5;

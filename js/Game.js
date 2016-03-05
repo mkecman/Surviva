@@ -27,7 +27,7 @@ var Game = function()
 	this.currentMoney = 0;
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
-	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 1,		 85,	 115,	 120,	 130 ); //5d
+	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 120,	 130,	 140 ); //5d
 	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
 	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
 	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
@@ -170,14 +170,17 @@ Game.prototype.Update = function()
 
 	this.UpdateGraphics();
 
+	if( this.turn == this.SURVIVE_DAYS )
+	{
+		this.winRound();
+		return;
+	}
+
 	if( this.Health.currentValue <= 0 )
 		this.loseRound();
 	else
 		if( this.aiEnabled )
 			this.timeoutID = setTimeout( trigerAi, 30 );
-		else
-			if( this.turn == this.SURVIVE_DAYS )
-				this.winRound();
 };
 
 Game.prototype.UpdateGraphics = function() 
@@ -188,21 +191,67 @@ Game.prototype.UpdateGraphics = function()
 	this.UpdateCart();
 	this.UpdateRadarChart();
 	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
+	this.setHealthBarColor();
 	this.barChart.update();
 	this.drawFood();
 };
 
+Game.prototype.setHealthBarColor = function() 
+{
+	var fill = this.Health.getFillPercentage();
+	var health = this.Health;
+	
+	if( fill < health.minimum ) 
+		this.barChart.datasets[ 0 ].bars[ 0 ].fillColor = this.healtBarColors[ 0 ];
+
+	if( fill >= health.minimum && fill < health.minOptimum )
+		this.barChart.datasets[ 0 ].bars[ 0 ].fillColor = this.healtBarColors[ 1 ];
+
+	if( fill >= health.minOptimum && fill < health.maxOptimum )
+		this.barChart.datasets[ 0 ].bars[ 0 ].fillColor = this.healtBarColors[ 2 ];
+
+	if( fill >= health.maxOptimum && fill < health.resisted )
+		this.barChart.datasets[ 0 ].bars[ 0 ].fillColor = this.healtBarColors[ 1 ];
+
+	if( fill >= health.resisted && fill < health.overdose )
+		this.barChart.datasets[ 0 ].bars[ 0 ].fillColor = this.healtBarColors[ 0 ];
+};
+
 Game.prototype.winRound = function() 
 {
-	var anotherGame = confirm( "Woooohoooo! The rescue team found you!\n\nOK - Play another round?\nCancel - Continue playing until you DIE!" );
-	if ( anotherGame ) 
+	this.trackResult();
+
+	if( !this.aiEnabled )
 	{
-		this.reset();
-		this.UpdateGraphics();
+		var anotherGame = confirm( "Woooohoooo! The rescue team found you!\n\nOK - Play another round?\nCancel - Continue playing until you DIE!" );
+		if ( anotherGame ) 
+		{
+			this.reset();
+			this.UpdateGraphics();
+		}
 	}
+	else
+		this.timeoutID = setTimeout( trigerAi, 30 );
 };
 
 Game.prototype.loseRound = function() 
+{
+	this.trackResult();
+
+	if( !this.aiEnabled )
+	{
+		var anotherGame = confirm( "Oh noooo, you died :(\nYou survived for "+ this.turn + " days!\nBetter luck next time!\n\nPlay another round?" );
+		if ( anotherGame == false ) 
+			alert( "Well, we'll give you an option to play anyway :)" );
+
+		this.reset();
+		this.UpdateGraphics();
+	}
+	else
+		this.timeoutID = setTimeout( resetAi, 1000 );
+};
+
+Game.prototype.trackResult = function() 
 {
 	var results = { turn : this.turn };
 	results.megaTurn = this.megaTurn;
@@ -226,18 +275,6 @@ Game.prototype.loseRound = function()
 	$.php("php/SaveFile.php", results );
 
 	$.php("php/SavePNG.php", { image: this.lineChart.toBase64Image(), megaTurn: this.megaTurn, rounds: results.totalRounds } );
-
-	if( !this.aiEnabled )
-	{
-		var anotherGame = confirm( "Oh noooo, you died!!!\nYou survived for "+ this.turn + " days!\nBetter luck next time!\n\nPlay another round?" );
-		if ( anotherGame == false ) 
-			alert( "Well, we'll give you an option to play anyway :)" );
-
-		this.reset();
-		this.UpdateGraphics();
-	}
-	else
-		this.timeoutID = setTimeout( resetAi, 3000 );
 };
 
 Game.prototype.reset = function() 
@@ -547,6 +584,8 @@ Game.prototype.barChartData =
 		}
 	]
 };
+
+Game.prototype.healtBarColors = [ "rgba(243,176,165,1)", "rgba(246,230,140,1)", "rgba(195,232,188,1)" ];
 
 Game.prototype.lineChartData = 
 {
