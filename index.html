@@ -6,7 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Dr. Game - Nutrients</title>
+        <title>SurViva</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -44,15 +44,17 @@
 
         <div class="main-container">
             <div class="main wrapper clearfix">
+                <article>
+                    <h2 id="turn-count">Day </h2>
+                </article>
                 <article id="game-container">
-                    <canvas id="nutrients-line-levels-canvas" height="250" width="650"></canvas>
-                    <canvas id="nutrients-bar-levels-canvas" height="400" width="400"></canvas>
-                    <canvas id="health-level-canvas" class="healthBar" height="400" width="80"></canvas>
-                    
+                    <canvas id="nutrients-bar-levels-canvas" height="400" width="500"></canvas>
+                    <canvas id="health-level-canvas" class="healthBar" height="400" width="100"></canvas>
+                    <br/><br/>
                 </article>
                 <article id="cell-container">
-                    <h3>Click on a nutrient to select it for consumption:</h3>
                 </article>
+                <!--
                 <aside>
                     <h3>Legend</h3>
                     <p style="background-color:#2094ee">WATER</p>
@@ -62,15 +64,21 @@
                     <p style="background-color:#a856ed">PROTEIN</p>
                     <p style="background-color:#ee9e20">FAT</p>
                 </aside>
-
+                -->
+                <article>
+                    <canvas id="nutrients-line-levels-canvas" height="250" width="600"></canvas>
+                </article>
                  <article>
-                    <input id="steps-input" type="text" width="50" value="20"/><button onclick="game.DrawLineChart( document.getElementById('steps-input').value )">Draw</button>
-                    <p id="turn-count">Turn: </p>
+                    <br/><br/><br/><br/><br/><br/><br/>
+                    -------------------------CHEATS-------------------------
+                    <br/><br/>
                     <button onclick="game.DrawLineChart(1)">Update</button>
                     <button onclick="game.startAi()">START AI</button>
                     <button onclick="game.stopAi()">STOP AI</button>
                     <p id="money-count">Available € this turn: </p>
+                    <input id="steps-input" type="text" width="50" value="20"/><button onclick="game.DrawLineChart( document.getElementById('steps-input').value )">Draw</button>
                     <div id="cart"></div>
+
                 </article>
 
                 
@@ -78,11 +86,13 @@
             </div> <!-- #main -->
         </div> <!-- #main-container -->
 
+        <!--
         <div class="footer-container">
             <footer class="wrapper">
                 <h3>footer</h3>
             </footer>
         </div>
+        -->
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>

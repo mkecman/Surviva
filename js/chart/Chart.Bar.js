@@ -59,18 +59,110 @@
 						xAbsolute = this.calculateX(barIndex) - (xWidth/2),
 						barWidth = this.calculateBarWidth(datasetCount);
 
-					return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth/2;
+					return xAbsolute + barWidth/2;
 				},
 				calculateBaseWidth : function(){
-					return (this.calculateX(1) - this.calculateX(0)) - (2*options.barValueSpacing);
+					return this.width;
+					//return (this.calculateX(1) - this.calculateX(0)) - (2*options.barValueSpacing);
 				},
 				calculateBarWidth : function(datasetCount){
-					//The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-					var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
+					return this.width * .9; //90% of bar width
+				},
+				draw : function(){
+					var ctx = this.ctx,
+						yLabelGap = (this.endPoint - this.startPoint) / this.steps,
+						xStart = this.width / 2;
+					if (this.display){
+						ctx.fillStyle = this.textColor;
+						ctx.font = this.font;
+						helpers.each(this.yLabels,function(labelString,index){
+							var yLabelCenter = this.endPoint - (yLabelGap * index),
+								linePositionY = Math.round(yLabelCenter),
+								drawHorizontalLine = this.showHorizontalLines;
 
-					return (baseWidth / datasetCount);
+							ctx.textAlign = "center";
+							ctx.textBaseline = "middle";
+							if (this.showLabels){
+								ctx.fillText(labelString,xStart,yLabelCenter);
+							}
+
+							// This is X axis, so draw it
+							if (index === 0 && !drawHorizontalLine){
+								drawHorizontalLine = true;
+							}
+
+							if (drawHorizontalLine){
+								ctx.beginPath();
+							}
+
+							if (index > 0){
+								// This is a grid line in the centre, so drop that
+								ctx.lineWidth = this.gridLineWidth;
+								ctx.strokeStyle = this.gridLineColor;
+							} else {
+								// This is the first line on the scale
+								ctx.lineWidth = this.lineWidth;
+								ctx.strokeStyle = this.lineColor;
+							}
+
+							linePositionY += helpers.aliasPixel(ctx.lineWidth);
+
+							if(drawHorizontalLine){
+								ctx.moveTo(0, linePositionY);
+								ctx.lineTo(this.width, linePositionY);
+								ctx.stroke();
+								ctx.closePath();
+							}
+
+							ctx.lineWidth = this.lineWidth;
+							ctx.strokeStyle = this.lineColor;
+							ctx.beginPath();
+							ctx.moveTo(xStart - 5, linePositionY);
+							ctx.lineTo(xStart, linePositionY);
+							ctx.stroke();
+							ctx.closePath();
+
+						},this);
+
+						helpers.each(this.xLabels,function(label,index){
+							var xPos = this.width / 2,//this.calculateX(index) + helpers.aliasPixel(this.lineWidth),
+								// Check to see if line/bar here and decide where to place the line
+								linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + helpers.aliasPixel(this.lineWidth),
+								isRotated = (this.xLabelRotation > 0);
+
+							if (index > 0){
+								// This is a grid line in the centre, so drop that
+								ctx.lineWidth = this.gridLineWidth;
+								ctx.strokeStyle = this.gridLineColor;
+							} else {
+								// This is the first line on the scale
+								ctx.lineWidth = this.lineWidth;
+								ctx.strokeStyle = this.lineColor;
+							}
+
+							ctx.lineWidth = this.lineWidth;
+							ctx.strokeStyle = this.lineColor;
+
+							// Small lines at the bottom of the base grid line
+							ctx.beginPath();
+							ctx.moveTo(linePos,this.endPoint);
+							ctx.lineTo(linePos,this.endPoint + 5);
+							ctx.stroke();
+							ctx.closePath();
+
+							ctx.save();
+							ctx.translate(xPos,(isRotated) ? this.endPoint + 12 : this.endPoint + 8);
+							ctx.rotate(helpers.radians(this.xLabelRotation)*-1);
+							ctx.font = this.font;
+							ctx.textAlign = (isRotated) ? "right" : "center";
+							ctx.textBaseline = (isRotated) ? "middle" : "top";
+							ctx.fillText(label, 0, 0);
+							ctx.restore();
+						},this);
+
+					}
 				}
-			});
+			}); //End ScaleClass Extend
 
 			this.datasets = [];
 
@@ -279,8 +371,6 @@
 
 			var ctx = this.chart.ctx;
 
-			this.scale.draw(easingDecimal);
-
 			//Draw all the bars for each dataset
 			helpers.each(this.datasets,function(dataset,datasetIndex){
 				helpers.each(dataset.bars,function(bar,index){
@@ -294,6 +384,8 @@
 						}, easingDecimal).draw();
 					}
 				},this);
+
+			this.scale.draw(easingDecimal);
 
 			},this);
 		}

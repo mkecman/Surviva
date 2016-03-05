@@ -9,6 +9,8 @@ function resetAi()
 	game.ai.playNextMove();
 }
 
+var ENABLE_ANIMATIONS = false;
+
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
@@ -81,6 +83,7 @@ Game.prototype.StartGame = function()
 	this.drawFood();
 
 	game.DrawLineChart( 0 );
+	this.UpdateGraphics();
 
 	if( this.aiEnabled )
 		this.timeoutID = setTimeout( trigerAi, 500 );
@@ -364,7 +367,7 @@ Game.prototype.optionsRadar =
 	datasetFill : true,
 	scaleShowLabels : true,
 	showTooltips: false,
-	animation:false,
+	animation: ENABLE_ANIMATIONS,
 	scaleFontColor : "#888",
 	scaleOverride : true,
 	scaleSteps : 6,
@@ -377,35 +380,14 @@ Game.prototype.optionsRadar =
 Game.prototype.optionsBar = 
 {
     tooltipTemplate: "<%if (label){%><%=value%> <%}%><%= label %>",
-
-    onAnimationComplete: function()
-    {
-        var ctx = this.chart.ctx;
-        ctx.font = this.scale.font;
-        ctx.fillStyle = this.scale.textColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-
-        /*
-        this.datasets.forEach(function (dataset) {
-            dataset.bars.forEach(function (bar) {
-            	ctx.fillText(bar.value, bar.x, 220);
-            	/*
-            	if( bar.value < 10 )
-                	ctx.fillText(bar.value, bar.x, bar.y - 5);
-                else
-                	ctx.fillText(bar.value, bar.x, bar.y + 20);
-                
-            });
-        })
-		*/
-    },
     showTooltips: false,
-    animation:false,
-    scaleFontColor : "black",
+    animation: ENABLE_ANIMATIONS,
+    scaleGridLineColor : "rgba(0,0,0,.05)",
+    scaleFontColor : "rgba(0,0,0,.5)",
+    scaleShowVerticalLines: false,
     scaleOverride : true,
-    scaleSteps : 6,
-    scaleStepWidth : 20,
+    scaleSteps : 12,
+    scaleStepWidth : 10,
     scaleStartValue : 0 
 };
 
@@ -527,9 +509,9 @@ Game.prototype.radarChartData =
 			strokeColor : "rgba(0,0,0,1)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
-			pointDotRadius : 5,
+			pointDotRadius : 6,
 			pointDotStrokeWidth : 1,
-			strokeWidth : 2,
+			strokeWidth : 1,
 			isLastSet : true,
 			data : [100,100,100,100,100,100]
 		}
@@ -542,7 +524,7 @@ Game.prototype.barChartData =
 	datasets : [
 		{
 			fillColor : [ "#13ef80", "#ef139f", "#2094ee", "#64ee20", "#c7c7c7", "#ee2024", "#a856ed", "#ee9e20" ],
-			strokeColor : "rgba(220,220,220,0.8)",
+			strokeColor : "rgba(0,0,0,1)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
 			data : [100]
