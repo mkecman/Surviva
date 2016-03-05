@@ -35,10 +35,10 @@
 			pointLabelFontStyle : "normal",
 
 			//Number - Point label font size in pixels
-			pointLabelFontSize : 10,
+			pointLabelFontSize : 11,
 
 			//String - Point label font colour
-			pointLabelFontColor : "#666",
+			pointLabelFontColor : "#777",
 
 			//Boolean - Whether to show a dot for each point
 			pointDot : true,
@@ -105,6 +105,8 @@
 					strokeColor : dataset.strokeColor,
 					pointColor : dataset.pointColor,
 					pointStrokeColor : dataset.pointStrokeColor,
+					strokeWidth : dataset.strokeWidth,
+					isLastSet : dataset.isLastSet,
 					points : []
 				};
 
@@ -123,9 +125,11 @@
 						x: (this.options.animation) ? this.scale.xCenter : pointPosition.x,
 						y: (this.options.animation) ? this.scale.yCenter : pointPosition.y,
 						strokeColor : dataset.pointStrokeColor,
-						fillColor : dataset.pointColor,
+						fillColor : data.labelColors[index],
 						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
-						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
+						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor,
+						radius : dataset.pointDotRadius,
+						strokeWidth : dataset.pointDotStrokeWidth
 					}));
 				},this);
 
@@ -292,9 +296,11 @@
 			var easeDecimal = ease || 1,
 				ctx = this.chart.ctx;
 			this.clear();
-			this.scale.draw();
-
+			
 			helpers.each(this.datasets,function(dataset){
+
+				if( dataset.isLastSet )
+					this.scale.draw();
 
 				//Transition each point first so that the line and point drawing isn't out of sync
 				helpers.each(dataset.points,function(point,index){
@@ -306,7 +312,7 @@
 
 
 				//Draw the line between all the points
-				ctx.lineWidth = this.options.datasetStrokeWidth;
+				ctx.lineWidth = dataset.strokeWidth;
 				ctx.strokeStyle = dataset.strokeColor;
 				ctx.beginPath();
 				helpers.each(dataset.points,function(point,index){

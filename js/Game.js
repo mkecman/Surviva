@@ -80,6 +80,8 @@ Game.prototype.StartGame = function()
 	this.foodDrawer.drawHTML( this.MAX_DRAWN_FOOD );
 	this.drawFood();
 
+	game.DrawLineChart( 0 );
+
 	if( this.aiEnabled )
 		this.timeoutID = setTimeout( trigerAi, 500 );
 }
@@ -101,8 +103,15 @@ Game.prototype.drawFood = function()
 	}
 };
 
+Game.prototype.startAi = function() 
+{
+	this.aiEnabled = true;
+	this.ai.playNextMove();
+};
+
 Game.prototype.stopAi = function() 
 {
+	this.aiEnabled = false;
 	clearTimeout(this.timeoutID);
 };
 
@@ -138,10 +147,7 @@ Game.prototype.Update = function()
 		total			 += nutrient.fat;
 	};
 
-
-	//console.log( this.Health.currentValue );
-	//this.Health.update( total );
-	//console.log( "update:" + this.turn + " | " + this.Health.currentValue );
+	this.Health.update( total );
 
 	this.updateNutrientAndHealth( this.Water, totalWater );
 	this.updateNutrientAndHealth( this.Vitamins, totalVitamins );
@@ -149,7 +155,6 @@ Game.prototype.Update = function()
 	this.updateNutrientAndHealth( this.Carbs, totalCarbs );
 	this.updateNutrientAndHealth( this.Protein, totalProtein );
 	this.updateNutrientAndHealth( this.Fat, totalFat );
-	//console.log( "______" );
 
 	this.currentMoney = this.dailyMoney;
 	this.dailyNutrients = [];
@@ -163,16 +168,10 @@ Game.prototype.Update = function()
 	this.drawFood();
 
 	if( this.Health.currentValue <= 0 )
-	{
-		//console.log( "died:" + this.Health.currentValue );
-		//console.log( "----------------------" );
 		this.winRound();
-	}
 	else
-	{
 		if( this.aiEnabled )
-			this.timeoutID = setTimeout( trigerAi, 10 );
-	}
+			this.timeoutID = setTimeout( trigerAi, 30 );
 };
 
 Game.prototype.UpdateGraphics = function() 
@@ -234,7 +233,6 @@ Game.prototype.reset = function()
 	this.Carbs.resetCurrentValue();
 	this.Protein.resetCurrentValue();
 	this.Fat.resetCurrentValue();
-	// body...
 };
 
 Game.prototype.UpdateRadarChart = function() 
@@ -275,7 +273,6 @@ Game.prototype.updateNutrientAndHealth = function( nutrient, delta )
 {
 	var efficiency = nutrient.update( delta );
 	var positive = efficiency * ( ( this.Health.starting * this.MAX_HEALTH_PR ) - this.Health.currentValue ) / 3 * nutrient.delta / this.Health.delta;
-	//console.log( "    " + nutrient.name + " : " + efficiency * nutrient.delta );
 
 	if( efficiency >= 0 )
 		this.Health.addDelta( positive ); //max increase is 20%
@@ -367,12 +364,12 @@ Game.prototype.optionsRadar =
 	datasetFill : true,
 	scaleShowLabels : true,
 	showTooltips: false,
-    animation:false,
-    scaleFontColor : "#000",
-    scaleOverride : true,
-    scaleSteps : 6,
-    scaleStepWidth : 20,
-    scaleStartValue : -20,
+	animation:false,
+	scaleFontColor : "#888",
+	scaleOverride : true,
+	scaleSteps : 6,
+	scaleStepWidth : 20,
+	scaleStartValue : -20,
 	pointDotRadius : 4,
 	pointDotStrokeWidth : 2,
 };
@@ -467,53 +464,73 @@ Game.prototype.polarChartData =
 Game.prototype.radarChartData = 
 {
 	labels : [ "Water","Minerals","Fat","Carbs","Protein","Vitamins"],
+	labelColors: [ "#2094ee", "#c7c7c7", "#ee9e20", "#ee2024", "#a856ed", "#64ee20" ],
 	datasets : [
 		{
 			label: "overdose",
-			fillColor : "rgba(243,176,165,0.2)",
-			strokeColor : "rgba(220,220,220,0.8)",
+			fillColor : "rgba(243,176,165,1)",
+			strokeColor : "rgba(220,220,220,0)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 0,
+			pointDotStrokeWidth : 0,
+			strokeWidth : 0,
 			data : [200,350,200,250,300,600]
 		},
 		{
 			label: "resisted",
-			fillColor : "rgba(246,230,140,0.2)",
-			strokeColor : "rgba(220,220,220,0.8)",
+			fillColor : "rgba(246,230,140,1)",
+			strokeColor : "rgba(220,220,220,0)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 0,
+			pointDotStrokeWidth : 0,
+			strokeWidth : 0,
 			data : [150,200,150,180,250,400]
 		},
 		{
 			label: "maxOptimum",
-			fillColor : "rgba(195,232,188,0.2)",
-			strokeColor : "rgba(220,220,220,0.8)",
+			fillColor : "rgba(195,232,188,1)",
+			strokeColor : "rgba(220,220,220,0)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 0,
+			pointDotStrokeWidth : 0,
+			strokeWidth : 0,
 			data : [120,150,110,130,150,200]
 		},
 		{
 			label: "minOptimum",
-			fillColor : "rgba(0,0,255,0.2)",
-			strokeColor : "rgba(220,220,220,0.8)",
+			fillColor : "rgba(246,230,140,1)",
+			strokeColor : "rgba(220,220,220,0)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 0,
+			pointDotStrokeWidth : 0,
+			strokeWidth : 0,
 			data : [80,50,40,25,90,70]
 		},
 		{
 			label: "minimum",
-			fillColor : "rgba(255,0,0,0.2)",
-			strokeColor : "rgba(220,220,220,0.8)",
+			fillColor : "rgba(243,176,165,1)",
+			strokeColor : "rgba(220,220,220,0)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 0,
+			pointDotStrokeWidth : 0,
+			strokeWidth : 0,
 			data : [50,10,20,5,50,30]
 		},
 		{
 			label: "current",
 			fillColor : "rgba(255,255,255,0)",
-			strokeColor : "rgba(0,0,0,0.8)",
+			strokeColor : "rgba(0,0,0,1)",
 			highlightFill: "rgba(220,220,220,0)",
 			highlightStroke: "rgba(220,220,220,1)",
+			pointDotRadius : 5,
+			pointDotStrokeWidth : 1,
+			strokeWidth : 2,
+			isLastSet : true,
 			data : [100,100,100,100,100,100]
 		}
 	]
@@ -617,8 +634,7 @@ Game.prototype.DrawLineChart = function( steps )
 	for (var i = 0; i < steps; i++) 
 	{
 		this.Update();
-		//if( !this.aiEnabled )
-			this.addDataToLineChart();
+		this.addDataToLineChart();
 	};
 	this.lineChart.update();
 };
@@ -644,6 +660,6 @@ Game.prototype.addDataToLineChart = function()
 Game.prototype.getMegaTurn = function() 
 {
 	var date = new Date();
-	return date.getFullYear() + "" + date.getMonth() + 1 + "" + date.getDate() + "-" + date.getHours() + date.getMinutes() + date.getSeconds();
+	return date.getFullYear() + "-" + ( date.getMonth() + 1 ) + "-" + date.getDate() + "+" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds();
 };
 

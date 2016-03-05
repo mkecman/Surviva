@@ -3,9 +3,7 @@ var game;
 window.onload = function()
 {
     game = new Game();
-	game.aiEnabled = false;
 	game.StartGame();
-	game.DrawLineChart( 0 );
 };
 
 
