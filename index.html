@@ -45,14 +45,15 @@
         <div class="main-container">
             <div class="main wrapper clearfix">
                 <article>
-                    <h2 id="turn-count">Day </h2>
+                    <h3 id="turn-count"></h3>
                 </article>
                 <article id="game-container">
-                    <canvas id="nutrients-bar-levels-canvas" height="400" width="500"></canvas>
-                    <canvas id="health-level-canvas" class="healthBar" height="400" width="100"></canvas>
+                    <canvas id="nutrient-levels-canvas"></canvas>
+                    <canvas id="health-level-canvas" class="healthBar"></canvas>
                     <br/><br/>
                 </article>
-                <article id="cell-container">
+                <h3>Choose one of found foods:</h3>
+                <article id="food-container">
                 </article>
                 <!--
                 <aside>
@@ -66,10 +67,9 @@
                 </aside>
                 -->
                 <article>
-                    <canvas id="nutrients-line-levels-canvas" height="250" width="600"></canvas>
+                    <canvas id="nutrients-line-levels-canvas" style="padding-top: 200px"></canvas>
                 </article>
                  <article>
-                    <br/><br/><br/><br/><br/><br/><br/>
                     -------------------------CHEATS-------------------------
                     <br/><br/>
                     <button onclick="game.DrawLineChart(1)">Update</button>

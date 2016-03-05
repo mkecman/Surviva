@@ -9,13 +9,14 @@ function resetAi()
 	game.ai.playNextMove();
 }
 
-var ENABLE_ANIMATIONS = false;
+var ENABLE_ANIMATIONS = true;
 
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
 	this.MAX_BUY_FOOD = 1;
 	this.MAX_DRAWN_FOOD = 3;
+	this.SURVIVE_DAYS = 40;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -33,6 +34,8 @@ var Game = function()
 	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 5,		 25,	 130,	 180,	 250 ); //30d
 	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 50,	 90,	 150,	 250,	 300 ); //7d
 	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 20,	 40,	 110,	 150,	 200 ); //18d
+
+	this.Health.currentValue = this.Health.starting;
 
 	this.totalWater = 0;
 	this.totalVitamins = 0;
@@ -55,38 +58,41 @@ Game.prototype.StartGame = function()
 		{ turn:"turn", 
 		megaTurn: this.megaTurn, 
 		nutrients : ["water","vitamins","minerals","carbs","protein","fat"],
-		minTurn : 1000,
-		maxTurn : 0,
-		avgTurn : 0,
-		totalRounds : 0
+		minTurn : "minTurn",
+		maxTurn : "maxTurn",
+		avgTurn : "avgTurn",
+		totalRounds : "rounds"
 	} );
 
 	this.turnCountHTML = document.getElementById( "turn-count" );
-	this.turnCountHTMLDefaultText = this.turnCountHTML.innerHTML;
+	this.turnCountHTMLDefaultText = "You survived for ";
+
 	this.moneyCountHTML = document.getElementById( "money-count" );
 	this.moneyCountDefaultText = this.moneyCountHTML.innerHTML;
 	this.currentMoney = this.dailyMoney;
 	this.moneyCountHTML.innerHTML = this.moneyCountDefaultText + this.currentMoney;
 	this.cartHTML = document.getElementById( "cart" );
 
-	var ctx = document.getElementById("nutrients-bar-levels-canvas").getContext("2d");
+	var ctx = document.getElementById("nutrient-levels-canvas").getContext("2d");
+	this.setCTXSize( ctx, 0.85, 0.5 );
 	this.radarChart = new Chart(ctx).Radar(this.radarChartData, this.optionsRadar);
 	this.UpdateRadarChart();
 
 	var ctx2 = document.getElementById("nutrients-line-levels-canvas").getContext("2d");
+	this.setCTXSize( ctx2, 0.98, 0.5 );
 	this.lineChart = new Chart(ctx2).Line(this.lineChartData, this.optionsLine);
 
 	var ctx3 = document.getElementById("health-level-canvas").getContext("2d");
+	this.setCTXSize( ctx3, 0.13, 0.5 );
 	this.barChart = new Chart(ctx3).Bar(this.barChartData, this.optionsBar);
 
 	this.foodDrawer.drawHTML( this.MAX_DRAWN_FOOD );
-	this.drawFood();
-
-	game.DrawLineChart( 0 );
 	this.UpdateGraphics();
 
 	if( this.aiEnabled )
 		this.timeoutID = setTimeout( trigerAi, 500 );
+	else
+		alert( "How to play:\n1 - Keep nutrients levels in the green area.\n2 - AVOID falling into the red zone!\n3 - Try to survive for "+ this.SURVIVE_DAYS + " days!" );
 }
 
 Game.prototype.drawFood = function() 
@@ -94,6 +100,7 @@ Game.prototype.drawFood = function()
 	this.foodDrawer.nutrients = [];
 
 	this.foodGenerator.foodIndex = 0;
+	this.foodGenerator.uniqueRandoms = [];
 	for (var i = 0; i < this.MAX_DRAWN_FOOD; i++) 
 	{
 		var nutrient = this.foodGenerator.generate();
@@ -121,7 +128,6 @@ Game.prototype.stopAi = function()
 Game.prototype.Update = function() 
 {
 	this.turn++;
-	this.turnCountHTML.innerHTML = this.turnCountHTMLDefaultText + this.turn;
 
 	var nutrient;
 	var totalWater		= 0;
@@ -161,25 +167,25 @@ Game.prototype.Update = function()
 
 	this.currentMoney = this.dailyMoney;
 	this.dailyNutrients = [];
-	this.UpdateCart();
-	
-	this.UpdateRadarChart();
 
-	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
-	this.barChart.update();
-
-	this.drawFood();
+	this.UpdateGraphics();
 
 	if( this.Health.currentValue <= 0 )
-		this.winRound();
+		this.loseRound();
 	else
 		if( this.aiEnabled )
 			this.timeoutID = setTimeout( trigerAi, 30 );
+		else
+			if( this.turn == this.SURVIVE_DAYS )
+				this.winRound();
 };
 
 Game.prototype.UpdateGraphics = function() 
 {
-	this.turnCountHTML.innerHTML = this.turnCountHTMLDefaultText + this.turn;
+	var plural = this.turn > 1 ? "s" : ""; 
+	this.turnCountHTML.innerHTML = this.turnCountHTMLDefaultText + this.turn + " day" + plural + " out of " + this.SURVIVE_DAYS + " days!";
+
+	this.UpdateCart();
 	this.UpdateRadarChart();
 	this.barChart.datasets[ 0 ].bars[ 0 ].value = this.Health.getFillPercentage();
 	this.barChart.update();
@@ -187,6 +193,16 @@ Game.prototype.UpdateGraphics = function()
 };
 
 Game.prototype.winRound = function() 
+{
+	var anotherGame = confirm( "Woooohoooo! The rescue team found you!\n\nOK - Play another round?\nCancel - Continue playing until you DIE!" );
+	if ( anotherGame ) 
+	{
+		this.reset();
+		this.UpdateGraphics();
+	}
+};
+
+Game.prototype.loseRound = function() 
 {
 	var results = { turn : this.turn };
 	results.megaTurn = this.megaTurn;
@@ -213,7 +229,7 @@ Game.prototype.winRound = function()
 
 	if( !this.aiEnabled )
 	{
-		var anotherGame = confirm( "YOU SURVIVED FOR "+ this.turn + " DAYS!\nBetter luck next time!\n\nPlay another round?" );
+		var anotherGame = confirm( "Oh noooo, you died!!!\nYou survived for "+ this.turn + " days!\nBetter luck next time!\n\nPlay another round?" );
 		if ( anotherGame == false ) 
 			alert( "Well, we'll give you an option to play anyway :)" );
 
@@ -394,7 +410,7 @@ Game.prototype.optionsBar =
 Game.prototype.optionsLine = 
 {
     tooltipTemplate: "<%if (label){%><%=value%> <%}%><%= label %>",
-    showTooltips: true,
+    showTooltips: false,
     animation:false,
     scaleFontColor : "black",
     scaleOverride : true,
@@ -645,3 +661,12 @@ Game.prototype.getMegaTurn = function()
 	return date.getFullYear() + "-" + ( date.getMonth() + 1 ) + "-" + date.getDate() + "+" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds();
 };
 
+Game.prototype.setCTXSize = function( ctx, widthScale, heightScale ) 
+{
+	var newWidth = window.innerWidth * widthScale;
+	var newHeight = window.innerHeight * heightScale;
+	ctx.width  = newWidth;
+	ctx.height = newHeight;
+	ctx.canvas.width  = newWidth;
+	ctx.canvas.height = newHeight;
+};

@@ -40,6 +40,7 @@ var FoodGenerator = function()
 	};
 
 	this.nutrients = [];
+	this.uniqueRandoms = [];
 
 	this.profiles = 
 	[
@@ -64,6 +65,16 @@ var FoodGenerator = function()
 			fat 		: 0
 		},
 		{
+			type		: "sweets",
+			names		: ["Brownies","Donuts","Chocolate","Tiramisu","KitKat","Baklava"],
+			water 		: 10,
+			vitamins 	: 0,
+			minerals 	: 5,
+			carbs 		: 80,
+			protein 	: 0,
+			fat 		: 10
+		},
+		{
 			type		: "starchy",
 			names		: ["Bread","Pasta","Cereals","Rice","Noodles"],
 			water 		: 10,
@@ -76,7 +87,7 @@ var FoodGenerator = function()
 		{
 			type		: "fruit",
 			names		: ["Apple","Banana","Orange","Berries","Kiwi","Pear"],
-			water 		: 20,
+			water 		: 30,
 			vitamins 	: 1,
 			minerals 	: 3,
 			carbs 		: 40,
@@ -119,7 +130,7 @@ var FoodGenerator = function()
 
 FoodGenerator.prototype.generate = function( index ) 
 {
-	var profile = this.profiles[ this.getRandomInt( 0, this.profiles.length - 1 ) ];
+	var profile = this.profiles[ this.uniqueRandom() ];
 	//var profile = this.profiles[ this.foodIndex ];
 
 	this.itemTemplate.id = this.foodIndex++;
@@ -151,6 +162,22 @@ FoodGenerator.prototype.generate = function( index )
 	
 	return JSON.parse( JSON.stringify( this.itemTemplate ) );
 }
+
+FoodGenerator.prototype.uniqueRandom = function() 
+{
+    // refill the array if needed
+    if (!this.uniqueRandoms.length) 
+        for (var i = 0; i < this.profiles.length; i++) 
+            this.uniqueRandoms.push(i);
+    
+    var index = Math.floor(Math.random() * this.uniqueRandoms.length);
+    var val = this.uniqueRandoms[index];
+
+    // now remove that value from the array
+    this.uniqueRandoms.splice(index, 1);
+
+    return val;
+};
 
 FoodGenerator.prototype.gp = function( base, percent )
 {

@@ -1,6 +1,6 @@
 var DrawFood = function()
 {
-	this.cellContainer = document.getElementById("cell-container");
+	this.cellContainer = document.getElementById("food-container");
 	this.nutrients = [];
     this.graphs = [];
 }
@@ -11,7 +11,7 @@ DrawFood.prototype.drawHTML = function( maxFood )
     var output = "";
     for (var i = 0; i < maxFood; i++) 
     {
-        output += this.getCellHTML( i );
+        output += this.getCellHTML( i, maxFood );
     };
     this.cellContainer.innerHTML = output;
 
@@ -48,10 +48,15 @@ DrawFood.prototype.makeFoodGraphs = function()
     };
 };
 
-DrawFood.prototype.getCellHTML = function( nutrientId ) 
+DrawFood.prototype.getCellHTML = function( nutrientId, maxFood ) 
 {
-	var output = '<div onclick="game.BuyNutrient('+ nutrientId +')" class="nutrient-cell">'+
-    '<canvas id="nutrichart' + nutrientId + '" width="120" height="120"></canvas>'+
+	var paddingPercent = 0.04;
+    var scrolledWidth = window.innerWidth * 0.97;
+    var paddingTotal = scrolledWidth * paddingPercent;
+    var singlePadding = paddingTotal / ( maxFood + 1 );
+    var singleWidth = ( scrolledWidth / maxFood ) - ( 2 * singlePadding );
+    var output = '<div onclick="game.BuyNutrient('+ nutrientId +')" class="nutrient-cell" style="padding: 0px '+ singlePadding +'px 0px '+ singlePadding +'px">'+
+    '<canvas id="nutrichart' + nutrientId + '" width="'+ singleWidth  +'" height="'+ singleWidth  +'"></canvas>'+
 '</div>';
 	return output;
 };

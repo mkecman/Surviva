@@ -192,12 +192,12 @@
 			this.chart.ctx.shadowOffsetX = 2; 
 			this.chart.ctx.shadowOffsetY = 2; 
 			this.chart.ctx.shadowBlur = 2;
-			this.chart.ctx.font = "20px Tahoma";
+			this.chart.ctx.font = "1.5em sans-serif";
 			this.chart.ctx.fontWeight = "normal";
 	        this.chart.ctx.fillStyle = "#FFF";
 	        this.chart.ctx.textAlign = "center";
 	        this.chart.ctx.textBaseline = "middle";
-			this.chart.ctx.fillText( this.options.labelName, this.chart.ctx.canvas.width / 2, this.chart.ctx.canvas.height / 2 );
+			this.chart.ctx.fillText( this.options.labelName, this.chart.width / 2, this.chart.height / 2 );
 			this.chart.ctx.shadowColor = "black";
 			this.chart.ctx.shadowOffsetX = 0; 
 			this.chart.ctx.shadowOffsetY = 0; 
