@@ -1,8 +1,6 @@
-var game;
-
 window.onload = function()
 {
-    game = new Game();
+	game = new Game();
 	game.StartGame();
 };
 

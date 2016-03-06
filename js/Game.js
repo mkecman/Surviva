@@ -9,8 +9,6 @@ function resetAi()
 	game.ai.playNextMove();
 }
 
-var ENABLE_ANIMATIONS = true;
-
 var Game = function()
 {
 	this.MAX_HEALTH_PR = 1.2;
@@ -27,7 +25,7 @@ var Game = function()
 	this.currentMoney = 0;
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
-	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 120,	 130,	 140 ); //5d
+	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 150,	 200,	 300 ); //5d
 	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
 	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
 	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
@@ -115,12 +113,14 @@ Game.prototype.drawFood = function()
 
 Game.prototype.startAi = function() 
 {
+	ENABLE_ANIMATIONS = false;
 	this.aiEnabled = true;
 	this.ai.playNextMove();
 };
 
 Game.prototype.stopAi = function() 
 {
+	ENABLE_ANIMATIONS = true;
 	this.aiEnabled = false;
 	clearTimeout(this.timeoutID);
 };

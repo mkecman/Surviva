@@ -99,7 +99,8 @@
 <?php
 $version = file_get_contents( "version" );
 
-$jsInc = '<script src="js/chart/Chart.Core.js?v='. $version .'"></script>' .
+$jsInc = '<script src="js/Globals.js?v='. $version .'"></script>' .
+        '<script src="js/chart/Chart.Core.js?v='. $version .'"></script>' .
         '<script src="js/chart/Chart.Doughnut.js?v='. $version .'"></script>' .
         '<script src="js/chart/Chart.Bar.js?v='. $version .'"></script>' .
         '<script src="js/chart/Chart.Line.js?v='. $version .'"></script>' .
