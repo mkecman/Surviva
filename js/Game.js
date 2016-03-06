@@ -26,12 +26,13 @@ var Game = function()
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
 	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 150,	 200,	 300 ); //5d
-	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
-	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
+	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 20,	 80,	 120,	 150,	 200 ); //4d
+	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 10,	 70,	 130,	 200,	 400 ); //12d
 	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
-	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 5,		 25,	 130,	 180,	 250 ); //30d
-	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 50,	 90,	 150,	 250,	 300 ); //7d
-	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 20,	 40,	 110,	 150,	 200 ); //18d
+	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 5,		 25,	 100,	 130,	 180 ); //30d
+	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 30,	 85,	 115,	 250,	 300 ); //7d
+	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 5,		 90,	 110,	 150,	 200 ); //18d
+	this.setupRadarChart();
 
 	this.Health.currentValue = this.Health.starting;
 
@@ -718,4 +719,24 @@ Game.prototype.setCTXSize = function( ctx, widthScale, heightScale )
 	ctx.height = newHeight;
 	ctx.canvas.width  = newWidth;
 	ctx.canvas.height = newHeight;
+};
+
+Game.prototype.setupRadarChart = function() 
+{
+	this.setRadarChartNutrientLevel( this.radarChartData.datasets[ 0 ], "overdose" );
+	this.setRadarChartNutrientLevel( this.radarChartData.datasets[ 1 ], "resisted" );
+	this.setRadarChartNutrientLevel( this.radarChartData.datasets[ 2 ], "maxOptimum" );
+	this.setRadarChartNutrientLevel( this.radarChartData.datasets[ 3 ], "minOptimum" );
+	this.setRadarChartNutrientLevel( this.radarChartData.datasets[ 4 ], "minimum" );
+};
+
+Game.prototype.setRadarChartNutrientLevel = function( dataset, level ) 
+{
+	dataset.data = [];
+	dataset.data.push( this.Water[ level ] );
+	dataset.data.push( this.Minerals[ level ] );
+	dataset.data.push( this.Fat[ level ] );
+	dataset.data.push( this.Carbs[ level ] );
+	dataset.data.push( this.Protein[ level ] );
+	dataset.data.push( this.Vitamins[ level ] );
 };
