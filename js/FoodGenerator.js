@@ -14,6 +14,16 @@ var FoodGenerator = function()
 		1100
 	];
 
+	this.nutrientsMaxProfiles = 
+	[
+		500,
+		500,
+		500,
+		500,
+		500,
+		1300
+	];
+
 	this.maxDeviation = .5;
 
 	this.foodIndex = 0;
@@ -46,13 +56,13 @@ var FoodGenerator = function()
 	[
 		{
 			type		: "junk",
-			names		: ["Carbonara","Hamburger","Pizza","Kebab"],
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
 			water 		: 25,	//water
 			vitamins 	: 1,	//vitamins
 			minerals 	: 1,	//minerals
 			carbs 		: 15,	//carbs
 			protein 	: 25,	//protein
-			fat 		: 0	//fat
+			fat 		: 10	//fat
 		},
 		{
 			type		: "drinks",
@@ -69,7 +79,7 @@ var FoodGenerator = function()
 			names		: ["Brownies","Donuts","Chocolate","Tiramisu","KitKat","Baklava"],
 			water 		: 10,
 			vitamins 	: 0,
-			minerals 	: 5,
+			minerals 	: 2,
 			carbs 		: 80,
 			protein 	: 0,
 			fat 		: 10
@@ -119,7 +129,7 @@ var FoodGenerator = function()
 			names		: ["Potatoes","Tomatoes","Onions","Lettuce","Avocado","Corn"],
 			water 		: 50,
 			vitamins 	: 4,
-			minerals 	: 0,
+			minerals 	: 2,
 			carbs 		: 0,
 			protein 	: 4,
 			fat 		: 0
@@ -158,6 +168,7 @@ FoodGenerator.prototype.generate = function( index )
 	this.itemTemplate.carbs = Math.round( nutrientsRandoms[ 3 ] / nutrientsSum * this.nutrientsMax );
 	this.itemTemplate.protein = Math.round( nutrientsRandoms[ 4 ] / nutrientsSum * this.nutrientsMax );
 	this.itemTemplate.fat = Math.round( nutrientsRandoms[ 5 ] / nutrientsSum * this.nutrientsMax );
+	this.itemTemplate.special = this.nutrientsMax > 1000 ? true : false;
 	
 	
 	return JSON.parse( JSON.stringify( this.itemTemplate ) );

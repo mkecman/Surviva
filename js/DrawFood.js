@@ -43,7 +43,7 @@ DrawFood.prototype.makeFoodGraphs = function()
         chart.segments[ 3 ].value = nutrient.fat;
         chart.segments[ 4 ].value = nutrient.vitamins;
         chart.segments[ 5 ].value = nutrient.minerals;
-        chart.options.labelName = nutrient.foodName;
+        chart.options.labelName = nutrient.foodName + ( nutrient.special ? "*" : "" );
         chart.update();
     };
 };

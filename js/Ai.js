@@ -22,7 +22,7 @@ Ai.prototype.playNextMove = function()
 	this.sortNutrientLevels();
 	this.collectFoodValues();
 	this.findBestFood();
-	this.playThreeBestFood();
+	this.playBestFood();
 };
 
 Ai.prototype.collectNutrientLevels = function() 
@@ -87,6 +87,7 @@ Ai.prototype.findBestFood = function()
 	{
 		nutrientName = this.nutrients[ 0 ].name.toLowerCase();
 		this.foods.sort( this.sortFoodByNeededNutrient( nutrientName ) );
+		this.foods.sort( this.sortFoodBySpecialNutrient( nutrientName ) );
 	}
 	/*else
 	{
@@ -113,7 +114,22 @@ Ai.prototype.sortFoodByLeastNeededNutrient = function( nutrientName )
 	}
 };
 
-Ai.prototype.playThreeBestFood = function() 
+Ai.prototype.sortFoodBySpecialNutrient = function( nutrientName ) 
+{
+	return function( a, b )
+	{
+		if( a.special && b.special )
+			return 0;
+		if( a.special && !b.special )
+			return -1;
+		if( !a.special && b.special )
+			return 1;
+
+		return 0;
+	}
+};
+
+Ai.prototype.playBestFood = function() 
 {
 	for (var i = 0; i < game.MAX_BUY_FOOD; i++) 
 	{

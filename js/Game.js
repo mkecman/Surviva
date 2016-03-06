@@ -16,7 +16,7 @@ var Game = function()
 	this.MAX_HEALTH_PR = 1.2;
 	this.MAX_BUY_FOOD = 1;
 	this.MAX_DRAWN_FOOD = 3;
-	this.SURVIVE_DAYS = 40;
+	this.SURVIVE_DAYS = 30;
 	this.timeoutID = 0;
 	
 	this.turn = 1;
@@ -697,7 +697,17 @@ Game.prototype.addDataToLineChart = function()
 Game.prototype.getMegaTurn = function() 
 {
 	var date = new Date();
-	return date.getFullYear() + "-" + ( date.getMonth() + 1 ) + "-" + date.getDate() + "+" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds();
+	var month = date.getMonth() + 1;
+
+	return date.getFullYear() + "-" + this.getFullNumber( month ) + "-" + this.getFullNumber( date.getDate() ) + "+" + this.getFullNumber( date.getHours() ) + "-" + this.getFullNumber( date.getMinutes() ) + "-" + this.getFullNumber( date.getSeconds() );
+};
+
+Game.prototype.getFullNumber = function( number ) 
+{
+	if( number < 10 )
+		return "0" + number;
+	else
+		return number;
 };
 
 Game.prototype.setCTXSize = function( ctx, widthScale, heightScale ) 
