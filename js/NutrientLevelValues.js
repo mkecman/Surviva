@@ -21,7 +21,7 @@ var NutrientLevelValues = function( name, maxDays, delta, minimum, minOptimum, m
 
 NutrientLevelValues.prototype.resetCurrentValue = function() 
 {
-	this.currentValue = ( this.starting * this.maxOptimum / 100 ) * 1;
+	this.currentValue = ( this.starting * this.maxOptimum / 100 ) * .8;
 };
 
 NutrientLevelValues.prototype.getEfficientyValue = function() 
