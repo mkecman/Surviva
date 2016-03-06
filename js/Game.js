@@ -26,12 +26,12 @@ var Game = function()
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
 	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 150,	 200,	 300 ); //5d
-	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 20,	 50,	 150,	 200,	 300 ); //4d
-	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 20,	 50,	 150,	 200,	 300 ); //12d
-	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 20,	 50,	 150,	 200,	 300 ); //24d
-	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 20,	 50,	 150,	 200,	 300 ); //30d
-	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 20,	 50,	 150,	 200,	 300 ); //7d
-	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 20,	 50,	 150,	 200,	 300 ); //18d
+	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
+	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
+	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
+	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 5,		 25,	 130,	 180,	 250 ); //30d
+	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 50,	 90,	 150,	 250,	 300 ); //7d
+	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 20,	 40,	 110,	 150,	 200 ); //18d
 	this.setupRadarChart();
 
 	this.Health.currentValue = this.Health.starting;

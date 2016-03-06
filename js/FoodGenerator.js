@@ -16,12 +16,14 @@ var FoodGenerator = function()
 
 	this.nutrientsMaxProfiles = 
 	[
-		500,
-		500,
-		500,
-		500,
-		500,
-		1300
+		700,
+		700,
+		700,
+		700,
+		750,
+		750,
+		750,
+		1200
 	];
 
 	this.maxDeviation = .5;
