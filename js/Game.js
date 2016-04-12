@@ -25,13 +25,13 @@ var Game = function()
 	this.currentMoney = 0;
 
 	this.Pain 		= new NutrientLevelValues( "Pain",		 100000, 0.01,	 1,		 2,		 3,		 4,		 5 );
-	this.Health 	= new NutrientLevelValues( "Health",	 3,		 1000,	 35,	 65,	 150,	 200,	 300 ); //5d
-	this.Water 		= new NutrientLevelValues( "Water",		 4,		 500,	 50,	 80,	 120,	 150,	 200 ); //4d
-	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 12,	 25,	 30,	 70,	 200,	 400,	 600 ); //12d
-	this.Minerals 	= new NutrientLevelValues( "Minerals",	 24,	 25,	 10,	 50,	 150,	 200,	 350 ); //24d
-	this.Carbs 		= new NutrientLevelValues( "Carbs",		 30,	 250,	 5,		 25,	 130,	 180,	 250 ); //30d
-	this.Protein 	= new NutrientLevelValues( "Protein",	 7,		 150,	 50,	 90,	 150,	 250,	 300 ); //7d
-	this.Fat 		= new NutrientLevelValues( "Fat",		 18,	 50,	 20,	 40,	 110,	 150,	 200 ); //18d
+	this.Health 	= new NutrientLevelValues( "Health",	 3,		 900,	 35,	 65,	 150,	 200,	 300 ); //5d
+	this.Water 		= new NutrientLevelValues( "Water",		 3,		 150,	 50,	 80,	 120,	 150,	 200 ); //4d
+	this.Vitamins 	= new NutrientLevelValues( "Vitamins",	 3,		 150,	 30,	 70,	 200,	 400,	 600 ); //12d
+	this.Minerals 	= new NutrientLevelValues( "Minerals",	 3,		 150,	 10,	 50,	 150,	 200,	 350 ); //24d
+	this.Carbs 		= new NutrientLevelValues( "Carbs",		 3,		 150,	 5,		 25,	 130,	 180,	 250 ); //30d
+	this.Protein 	= new NutrientLevelValues( "Protein",	 3,		 150,	 50,	 90,	 150,	 250,	 300 ); //7d
+	this.Fat 		= new NutrientLevelValues( "Fat",		 3,		 150,	 20,	 40,	 110,	 150,	 200 ); //18d
 	this.setupRadarChart();
 
 	this.Health.currentValue = this.Health.starting;
@@ -78,7 +78,7 @@ Game.prototype.StartGame = function()
 	this.UpdateRadarChart();
 
 	var ctx2 = document.getElementById("nutrients-line-levels-canvas").getContext("2d");
-	this.setCTXSize( ctx2, 0.98, 0.5 );
+	this.setCTXSize( ctx2, 0.98, 0.2 );
 	this.lineChart = new Chart(ctx2).Line(this.lineChartData, this.optionsLine);
 
 	var ctx3 = document.getElementById("health-level-canvas").getContext("2d");
@@ -90,8 +90,8 @@ Game.prototype.StartGame = function()
 
 	if( this.aiEnabled )
 		this.timeoutID = setTimeout( trigerAi, 500 );
-	else
-		alert( "How to play:\n1 - Keep nutrients levels in the green area.\n2 - AVOID falling into the red zone!\n3 - Try to survive for "+ this.SURVIVE_DAYS + " days!" );
+	//else
+	//	alert( "How to play:\n1 - Keep nutrients levels in the green area.\n2 - AVOID falling into the red zone!\n3 - Try to survive for "+ this.SURVIVE_DAYS + " days!" );
 }
 
 Game.prototype.drawFood = function() 
@@ -182,6 +182,7 @@ Game.prototype.Update = function()
 	else
 		if( this.aiEnabled )
 			this.timeoutID = setTimeout( trigerAi, 30 );
+	
 };
 
 Game.prototype.UpdateGraphics = function() 
@@ -311,6 +312,7 @@ Game.prototype.UpdateRadarChart = function()
 	this.radarChart.datasets[ 5 ].points[ 4 ].value = this.Protein.getFillPercentage();
 	this.radarChart.datasets[ 5 ].points[ 2 ].value = this.Fat.getFillPercentage();
 	
+	/*
 	var maxScaleStep = this.optionsRadar.scaleSteps;
 	for (var i = 0; i < this.radarChart.datasets[5].points.length; i++) 
 	{
@@ -322,6 +324,8 @@ Game.prototype.UpdateRadarChart = function()
 	if( maxScaleStep > 12 )
 		maxScaleStep = 12;
 	this.radarChart.options.scaleSteps = maxScaleStep;
+	*/
+	this.radarChart.options.scaleSteps = 12;
 	this.radarChart.update();
 
 };
@@ -440,7 +444,7 @@ Game.prototype.optionsBar =
     scaleFontColor : "rgba(0,0,0,.5)",
     scaleShowVerticalLines: false,
     scaleOverride : true,
-    scaleSteps : 12,
+    scaleSteps : 20,
     scaleStepWidth : 10,
     scaleStartValue : 0 
 };

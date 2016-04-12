@@ -45,6 +45,11 @@
                 <article>
                     <h3 id="turn-count"></h3>
                 </article>
+                <article>
+                    <button onclick="game.startAi()">START AI</button>
+                    <button onclick="game.stopAi()">STOP AI</button>
+                    <canvas id="nutrients-line-levels-canvas" ></canvas>
+                </article>
                 <article id="game-container">
                     <canvas id="nutrient-levels-canvas"></canvas>
                     <canvas id="health-level-canvas" class="healthBar"></canvas>
@@ -53,6 +58,25 @@
                 <h3>Choose one of found foods:</h3>
                 <article id="food-container">
                 </article>
+                <p>
+                    <div id="colorSelector"><div style="background-color: #0000ff"></div></div>
+                </p>
+                <pre>
+$('#colorSelector').ColorPicker({
+    color: '#0000ff',
+    onShow: function (colpkr) {
+        $(colpkr).fadeIn(500);
+        return false;
+    },
+    onHide: function (colpkr) {
+        $(colpkr).fadeOut(500);
+        return false;
+    },
+    onChange: function (hsb, hex, rgb) {
+        $('#colorSelector div').css('backgroundColor', '#' + hex);
+    }
+});
+</pre>
                 <!--
                 <aside>
                     <h3>Legend</h3>
@@ -64,9 +88,7 @@
                     <p style="background-color:#ee9e20">FAT</p>
                 </aside>
                 -->
-                <article>
-                    <canvas id="nutrients-line-levels-canvas" style="padding-top: 200px"></canvas>
-                </article>
+                
                  <article>
                     -------------------------CHEATS-------------------------
                     <br/><br/>
@@ -95,6 +117,11 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="js/jqueryphp/jquery.php.js" type="text/javascript"></script>
+
+        <script type="text/javascript" src="js/colorpicker/colorpicker.js"></script>
+    <script type="text/javascript" src="js/colorpicker/eye.js"></script>
+    <script type="text/javascript" src="js/colorpicker/utils.js"></script>
+    <script type="text/javascript" src="js/colorpicker/layout.js?ver=1.0.2"></script>
 
 <?php
 $version = file_get_contents( "version" );

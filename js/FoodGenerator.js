@@ -16,14 +16,7 @@ var FoodGenerator = function()
 
 	this.nutrientsMaxProfiles = 
 	[
-		700,
-		700,
-		700,
-		700,
-		750,
-		750,
-		750,
-		1200
+		900
 	];
 
 	this.maxDeviation = .5;
@@ -84,7 +77,7 @@ var FoodGenerator = function()
 			minerals 	: 2,
 			carbs 		: 80,
 			protein 	: 0,
-			fat 		: 10
+			fat 		: 5
 		},
 		{
 			type		: "starchy",
@@ -94,7 +87,7 @@ var FoodGenerator = function()
 			minerals 	: 1,
 			carbs 		: 60,
 			protein 	: 10,
-			fat 		: 8
+			fat 		: 5
 		},
 		{
 			type		: "fruit",
@@ -104,7 +97,7 @@ var FoodGenerator = function()
 			minerals 	: 3,
 			carbs 		: 40,
 			protein 	: 1,
-			fat 		: 1
+			fat 		: 0
 		},
 		{
 			type		: "dairy",
@@ -137,16 +130,116 @@ var FoodGenerator = function()
 			fat 		: 0
 		}
 	];
+
+	this.profiles = 
+	[
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 50,	//water
+			vitamins 	: 10,	//vitamins
+			minerals 	: 10,	//minerals
+			carbs 		: 10,	//carbs
+			protein 	: 10,	//protein
+			fat 		: 10	//fat
+		},
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 10,	//water
+			vitamins 	: 50,	//vitamins
+			minerals 	: 10,	//minerals
+			carbs 		: 10,	//carbs
+			protein 	: 10,	//protein
+			fat 		: 10	//fat
+		},
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 10,	//water
+			vitamins 	: 10,	//vitamins
+			minerals 	: 50,	//minerals
+			carbs 		: 10,	//carbs
+			protein 	: 10,	//protein
+			fat 		: 10	//fat
+		},
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 10,	//water
+			vitamins 	: 10,	//vitamins
+			minerals 	: 10,	//minerals
+			carbs 		: 50,	//carbs
+			protein 	: 10,	//protein
+			fat 		: 10	//fat
+		},
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 10,	//water
+			vitamins 	: 10,	//vitamins
+			minerals 	: 10,	//minerals
+			carbs 		: 10,	//carbs
+			protein 	: 50,	//protein
+			fat 		: 10	//fat
+		},
+		{
+			type		: "junk",
+			names		: ["Carbonara","Hamburger","Pizza","Doner", "Fries"],
+			water 		: 10,	//water
+			vitamins 	: 10,	//vitamins
+			minerals 	: 10,	//minerals
+			carbs 		: 10,	//carbs
+			protein 	: 10,	//protein
+			fat 		: 50	//fat
+		}
+	];
 	
 }
 
+FoodGenerator.prototype.generateProfile = function() 
+{
+	var tempProfile = this.profiles[ 0 ];
+	
+	var nutrientsMax = 100; 
+	
+	var nutrientsSum = 0;
+	var nutrientsRandoms = [];
+	var base;
+	var gp;
+
+	for (var i = 0; i < 6; i++) 
+	{
+		base = 17;
+		gp = 17;
+		if( Math.random() < 0.3 )
+		{
+			base = 0;
+			gp = 0;
+		}
+		nutrientsRandoms[ i ] = this.getRandomInt( this.getRandomInt( base - gp, base ), this.getRandomInt( base, base + gp ) );
+		nutrientsSum += nutrientsRandoms[ i ];
+	};
+
+	tempProfile.water = Math.round( nutrientsRandoms[ 0 ] / nutrientsSum * nutrientsMax );
+	tempProfile.vitamins = Math.round( nutrientsRandoms[ 1 ] / nutrientsSum * nutrientsMax );
+	tempProfile.minerals = Math.round( nutrientsRandoms[ 2 ] / nutrientsSum * nutrientsMax );
+	tempProfile.carbs = Math.round( nutrientsRandoms[ 3 ] / nutrientsSum * nutrientsMax );
+	tempProfile.protein = Math.round( nutrientsRandoms[ 4 ] / nutrientsSum * nutrientsMax );
+	tempProfile.fat = Math.round( nutrientsRandoms[ 5 ] / nutrientsSum * nutrientsMax );
+
+	return tempProfile;
+};
+
+
 FoodGenerator.prototype.generate = function( index ) 
 {
-	var profile = this.profiles[ this.uniqueRandom() ];
+	var profile = this.generateProfile();
+	//var profile = this.profiles[ this.uniqueRandom( this.uniqueRandoms, this.profiles.length ) ];
 	//var profile = this.profiles[ this.foodIndex ];
 
 	this.itemTemplate.id = this.foodIndex++;
-	this.itemTemplate.foodName = profile.names[ this.getRandomInt( 0, profile.names.length - 1 ) ];
+	this.itemTemplate.foodName = "";//profile.names[ this.getRandomInt( 0, profile.names.length - 1 ) ];
 	this.itemTemplate.price = 1;
 	
 	this.nutrientsMax = this.nutrientsMaxProfiles[ this.getRandomInt( 0, this.nutrientsMaxProfiles.length - 1 ) ]; 
@@ -159,7 +252,7 @@ FoodGenerator.prototype.generate = function( index )
 	for (var i = 0; i < 6; i++) 
 	{
 		base = profile[ this.nutrientsIndexMap[ i ] ];
-		gp = this.gp( base, this.maxDeviation );
+		gp = Math.round( base * this.maxDeviation );
 		nutrientsRandoms[ i ] = this.getRandomInt( this.getRandomInt( base - gp, base ), this.getRandomInt( base, base + gp ) );
 		nutrientsSum += nutrientsRandoms[ i ];
 	};
@@ -176,26 +269,21 @@ FoodGenerator.prototype.generate = function( index )
 	return JSON.parse( JSON.stringify( this.itemTemplate ) );
 }
 
-FoodGenerator.prototype.uniqueRandom = function() 
+FoodGenerator.prototype.uniqueRandom = function( poolArray, maxObjects ) 
 {
     // refill the array if needed
-    if (!this.uniqueRandoms.length) 
-        for (var i = 0; i < this.profiles.length; i++) 
-            this.uniqueRandoms.push(i);
+    if (!poolArray.length) 
+        for (var i = 0; i < maxObjects; i++) 
+            poolArray.push(i);
     
-    var index = Math.floor(Math.random() * this.uniqueRandoms.length);
-    var val = this.uniqueRandoms[index];
+    var index = Math.floor(Math.random() * poolArray.length);
+    var val = poolArray[index];
 
     // now remove that value from the array
-    this.uniqueRandoms.splice(index, 1);
+    poolArray.splice(index, 1);
 
     return val;
 };
-
-FoodGenerator.prototype.gp = function( base, percent )
-{
-	return Math.round( base * percent );
-}
 
 FoodGenerator.prototype.getRandomInt = function(min, max) 
 {

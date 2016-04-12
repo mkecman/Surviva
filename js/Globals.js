@@ -1,2 +1,2 @@
 var game;
-var ENABLE_ANIMATIONS = true;
+var ENABLE_ANIMATIONS = false;

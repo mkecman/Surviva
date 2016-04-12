@@ -21,7 +21,8 @@ var NutrientLevelValues = function( name, maxDays, delta, minimum, minOptimum, m
 
 NutrientLevelValues.prototype.resetCurrentValue = function() 
 {
-	this.currentValue = ( this.starting * this.minOptimum / 100 ) * 1.3;
+	//this.currentValue = ( this.starting * this.minOptimum / 100 ) * 1.3;
+	this.currentValue = this.starting;
 };
 
 NutrientLevelValues.prototype.getEfficientyValue = function() 
@@ -61,7 +62,7 @@ NutrientLevelValues.prototype.update = function( inputGrams )
 {
 	var newValue = this.currentValue + inputGrams - this.delta;
 	this.currentValue = newValue;
-	/*
+
 	var newPercentage = Math.round( newValue / this.starting * 100);
 	var maxOverdose = Math.round( this.overdose * this.MAX_POSITIVE_PR );
 	
@@ -72,13 +73,13 @@ NutrientLevelValues.prototype.update = function( inputGrams )
 			this.currentValue = ( maxOverdose * this.starting / 100 );
 	else
 		this.currentValue = this.starting * this.MAX_NEGATIVE_PR / 100;
-	*/
-
+	
 	return this.getEfficientyValue();
 };
 
 NutrientLevelValues.prototype.addDelta = function( delta ) 
 {
+	console.log( delta );
 	this.currentValue += delta;
 };
 
